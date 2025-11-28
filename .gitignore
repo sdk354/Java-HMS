@@ -1,33 +1,123 @@
+###########################
+# Java / Spring Boot
+###########################
+
 HELP.md
 target/
 .mvn/wrapper/maven-wrapper.jar
+
+# Exclude target folders everywhere except /src/main and /src/test
 !**/src/main/**/target/
 !**/src/test/**/target/
 
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
+# Logs
+*.log
+logs/
+spring.log
 
-### IntelliJ IDEA ###
-.idea
+# JVM
+hs_err_pid*
+replay_pid*
+
+# Build outputs
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+###########################
+# Maven
+###########################
+.mvn/
+.settings/
+dependency-reduced-pom.xml
+
+###########################
+# IntelliJ Idea
+###########################
+.idea/
 *.iws
 *.iml
 *.ipr
 
-### NetBeans ###
+###########################
+# VS Code
+###########################
+.vscode/
+
+###########################
+# Eclipse / STS
+###########################
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings/
+.springBeans
+.sts4-cache
+
+###########################
+# NetBeans
+###########################
 /nbproject/private/
 /nbbuild/
 /dist/
 /nbdist/
 /.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
 
-### VS Code ###
-.vscode/
+###########################
+# OS-specific files
+###########################
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+###########################
+# Node / React (frontend)
+###########################
+
+# Node modules
+node_modules/
+frontend/node_modules/
+backend/node_modules/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Build artifacts
+dist/
+frontend/dist/
+frontend/build/
+backend/dist/
+backend/build/
+
+# Vite / React tooling
+.vite/
+.vite-env.d.ts
+
+# Coverage / testing
+coverage/
+*.lcov
+
+###########################
+# Misc
+###########################
+*.tmp
+*.swp
+*.swo
+*.bak
