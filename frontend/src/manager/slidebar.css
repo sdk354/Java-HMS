@@ -1,0 +1,115 @@
+:root {
+  --bg-sidebar: #f5f6fa;
+  --text-main: #1a1a2e;
+  --text-accent: #7a82b8;
+  --highlight: #f28c38;
+  --btn-bg: rgba(224, 228, 242, 0.6);
+}
+
+[data-theme="dark"] {
+  --bg-sidebar: #2d3250;
+  --text-main: #ffffff;
+  --text-accent: #676f9d;
+  --highlight: #f9b17a;
+  --btn-bg: rgba(66, 71, 105, 0.6);
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 250px;
+  height: 100vh;
+  background: var(--bg-sidebar);
+  padding: 20px;
+  overflow: hidden;
+  box-shadow: 4px 0 20px rgba(0,0,0,0.15);
+  box-sizing: border-box;
+}
+
+.sidebar-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 8px;
+}
+
+.sidebar-user {
+  font-size: 14px;
+  color: var(--text-accent);
+  margin-bottom: 6px;
+}
+
+.sidebar-role {
+  font-size: 12px;
+  color: var(--text-accent);
+  display: block;
+  margin-bottom: 25px;
+}
+
+.menu,
+.bottom-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-left: 0;
+}
+
+.menu-item,
+.menu-log_out {
+  text-decoration: none;
+  padding: 10px 20px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-main);
+  background: var(--btn-bg);
+  backdrop-filter: blur(8px);
+  border: none;
+  outline: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  transition: background 0.25s ease, color 0.25s ease, transform 0.2s ease, box-shadow 0.25s ease;
+}
+
+.menu-item_theme-btn {
+  text-decoration: none;
+  padding: 10px 20px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-main);
+  background: var(--btn-bg);
+  backdrop-filter: blur(8px);
+  border: none;
+  outline: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin-top: 10px;
+  transition: 
+    background 0.25s ease, 
+    color 0.25s ease, 
+    transform 0.2s ease, 
+    box-shadow 0.25s ease;
+}
+
+
+.menu-item:not(.active):hover,
+.menu-item_theme-btn:hover,
+.menu-log_out:hover {
+  background: var(--highlight);
+  color: #ffffff;
+  transform: translateX(4px);
+  box-shadow: 0 6px 16px rgba(242, 140, 56, 0.4);
+}
+
+.menu-item.active {
+  background: var(--highlight);
+  color: #ffffff;
+  box-shadow: 0 6px 16px rgba(242, 140, 56, 0.4);
+  transform: none;
+}
