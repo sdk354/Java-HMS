@@ -18,11 +18,15 @@ public class BookingController {
         this.bookingService = bookingService;
     }
 
+    // ================= CREATE BOOKING =================
     @PostMapping
-    public ResponseEntity<BookingResponse> createBooking(@RequestBody BookingRequest request) {
+    public ResponseEntity<BookingResponse> createBooking(
+            @RequestBody BookingRequest request
+    ) {
         return ResponseEntity.ok(bookingService.createBooking(request));
     }
 
+    // ================= GET ALL BOOKINGS =================
     @GetMapping
     public ResponseEntity<List<BookingResponse>> getAllBookings() {
         return ResponseEntity.ok(bookingService.getAllBookings());

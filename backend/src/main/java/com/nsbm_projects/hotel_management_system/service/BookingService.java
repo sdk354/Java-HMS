@@ -8,6 +8,8 @@ import com.nsbm_projects.hotel_management_system.repository.RoomRepository;
 import com.nsbm_projects.hotel_management_system.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,32 +20,46 @@ public class BookingService {
     private final RoomRepository roomRepository;
     private final UserRepository userRepository;
 
-    public BookingService(BookingRepository bookingRepository,
-                          RoomRepository roomRepository,
-                          UserRepository userRepository) {
+    public BookingService(
+            BookingRepository bookingRepository,
+            RoomRepository roomRepository,
+            UserRepository userRepository
+    ) {
         this.bookingRepository = bookingRepository;
         this.roomRepository = roomRepository;
         this.userRepository = userRepository;
     }
 
     public BookingResponse createBooking(BookingRequest request) {
+
         Room room = roomRepository.findById(request.getRoomId())
                 .orElseThrow(() -> new IllegalArgumentException("Room not found"));
+
         User guest = userRepository.findById(request.getGuestId())
                 .orElseThrow(() -> new IllegalArgumentException("Guest not found"));
 
-        // Prevent double booking
-        List<Booking> overlapping = bookingRepository
-                .findByRoomIdAndCheckOutDateAfterAndCheckInDateBefore(
-                        room.getId(), request.getCheckInDate(), request.getCheckOutDate());
+        if (!request.getCheckOutDate().isAfter(request.getCheckInDate())) {
+            throw new IllegalArgumentException("Check-out date must be after check-in date");
+        }
+
+        List<Booking> overlapping =
+                bookingRepository.findByRoom_IdAndCheckOutDateAfterAndCheckInDateBefore(
+                        room.getId(),
+                        request.getCheckInDate(),
+                        request.getCheckOutDate()
+                );
 
         if (!overlapping.isEmpty()) {
             throw new IllegalStateException("Room already booked for these dates");
         }
 
-        // Calculate total amount
-        long nights = request.getCheckOutDate().toEpochDay() - request.getCheckInDate().toEpochDay();
-        double total = nights * room.getPricePerNight();
+        long nights = ChronoUnit.DAYS.between(
+                request.getCheckInDate(),
+                request.getCheckOutDate()
+        );
+
+        BigDecimal totalAmount =
+                room.getPricePerNight().multiply(BigDecimal.valueOf(nights));
 
         Booking booking = new Booking();
         booking.setGuest(guest);
@@ -51,20 +67,27 @@ public class BookingService {
         booking.setCheckInDate(request.getCheckInDate());
         booking.setCheckOutDate(request.getCheckOutDate());
         booking.setBookingStatus(BookingStatus.NEW);
-        booking.setTotalAmount(total);
+        booking.setTotalAmount(totalAmount);
 
-        Booking saved = bookingRepository.save(booking);
-
-        return new BookingResponse(saved.getId(), guest.getId(), room.getId(),
-                saved.getCheckInDate(), saved.getCheckOutDate(),
-                saved.getBookingStatus(), saved.getTotalAmount());
+        return mapToResponse(bookingRepository.save(booking));
     }
 
     public List<BookingResponse> getAllBookings() {
-        return bookingRepository.findAll().stream()
-                .map(b -> new BookingResponse(b.getId(), b.getGuest().getId(), b.getRoom().getId(),
-                        b.getCheckInDate(), b.getCheckOutDate(),
-                        b.getBookingStatus(), b.getTotalAmount()))
+        return bookingRepository.findAll()
+                .stream()
+                .map(this::mapToResponse)
                 .collect(Collectors.toList());
+    }
+
+    private BookingResponse mapToResponse(Booking booking) {
+        return new BookingResponse(
+                booking.getId(),
+                booking.getGuest().getId(),
+                booking.getRoom().getId(),
+                booking.getCheckInDate(),
+                booking.getCheckOutDate(),
+                booking.getBookingStatus(),
+                booking.getTotalAmount()
+        );
     }
 }
