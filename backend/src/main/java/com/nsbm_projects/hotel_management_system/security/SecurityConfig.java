@@ -24,12 +24,19 @@ public class SecurityConfig {
 
     private final JwtService jwtService;
     private final UserRepository userRepository;
+    private final RateLimitingFilter rateLimitingFilter;
 
-    public SecurityConfig(JwtService jwtService, UserRepository userRepository) {
+    public SecurityConfig(JwtService jwtService,
+                          UserRepository userRepository,
+                          RateLimitingFilter rateLimitingFilter) {
         this.jwtService = jwtService;
         this.userRepository = userRepository;
+        this.rateLimitingFilter = rateLimitingFilter;
     }
 
+    // -------------------------
+    // UserDetailsService
+    // -------------------------
     @Bean
     public UserDetailsService userDetailsService() {
         return username -> userRepository.findByUsername(username)
@@ -37,49 +44,79 @@ public class SecurityConfig {
                         .withUsername(user.getUsername())
                         .password(user.getPassword())
                         .authorities(user.getRoles().stream()
-                                .map(r -> "ROLE_" + r.getName())
+                                .map(role -> "ROLE_" + role.getName())
                                 .toArray(String[]::new))
                         .disabled(!user.isEnabled())
                         .build())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                .orElseThrow(() ->
+                        new UsernameNotFoundException("User not found: " + username));
     }
 
+    // -------------------------
+    // Authentication Provider
+    // -------------------------
     @Bean
-    public AuthenticationProvider authenticationProvider(PasswordEncoder encoder,
-                                                         UserDetailsService uds) {
+    public AuthenticationProvider authenticationProvider(
+            PasswordEncoder encoder,
+            UserDetailsService userDetailsService) {
+
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setPasswordEncoder(encoder);
-        provider.setUserDetailsService(uds);
+        provider.setUserDetailsService(userDetailsService);
         return provider;
     }
 
+    // -------------------------
+    // Password Encoder
+    // -------------------------
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    // -------------------------
+    // Authentication Manager
+    // -------------------------
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration)
-            throws Exception {
+    public AuthenticationManager authenticationManager(
+            AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
     }
 
+    // -------------------------
+    // JWT Filter
+    // -------------------------
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
         return new JwtAuthenticationFilter(jwtService, userRepository);
     }
 
+    // -------------------------
+    // Security Filter Chain
+    // -------------------------
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http,
-                                           AuthenticationProvider provider) throws Exception {
+                                           AuthenticationProvider authenticationProvider)
+            throws Exception {
+
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers(
+                                "/api/auth/**",
+                                "/actuator/health",
+                                "/actuator/info"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
-                .authenticationProvider(provider)
+                .authenticationProvider(authenticationProvider)
+
+                // 🔹 Rate limiting FIRST (Task 15)
+                .addFilterBefore(rateLimitingFilter, UsernamePasswordAuthenticationFilter.class)
+
+                // 🔹 JWT authentication SECOND
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+
                 .httpBasic(Customizer.withDefaults());
 
         return http.build();
