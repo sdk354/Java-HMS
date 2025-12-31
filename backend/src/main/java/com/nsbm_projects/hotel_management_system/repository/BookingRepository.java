@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
-    List<Booking> findByRoomIdAndCheckOutDateAfterAndCheckInDateBefore(
+    List<Booking> findByRoom_IdAndCheckOutDateAfterAndCheckInDateBefore(
             Long roomId, LocalDate checkIn, LocalDate checkOut);
+
 }
