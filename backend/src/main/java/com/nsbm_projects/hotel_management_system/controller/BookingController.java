@@ -31,4 +31,16 @@ public class BookingController {
     public ResponseEntity<List<BookingResponse>> getAllBookings() {
         return ResponseEntity.ok(bookingService.getAllBookings());
     }
+    @PostMapping("/{id}/check-in")
+    public ResponseEntity<String> checkIn(@PathVariable Long id) {
+        bookingService.checkIn(id);
+        return ResponseEntity.ok("Checked in successfully");
+    }
+
+    @PostMapping("/{id}/check-out")
+    public ResponseEntity<String> checkOut(@PathVariable Long id) {
+        bookingService.checkOut(id);
+        return ResponseEntity.ok("Checked out successfully");
+    }
+
 }
