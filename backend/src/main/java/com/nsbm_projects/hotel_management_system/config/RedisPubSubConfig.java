@@ -3,11 +3,13 @@ package com.nsbm_projects.hotel_management_system.config;
 import com.nsbm_projects.hotel_management_system.realtime.RedisRoomStatusSubscriber;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.listener.*;
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 
 @Configuration
+@Profile("prod")
 public class RedisPubSubConfig {
 
     public static final String ROOM_STATUS_CHANNEL = "hms:room-status";

@@ -9,6 +9,6 @@ public class RoomRequest {
 
     private String roomNumber;
     private String type;
-    private BigDecimal pricePerNight;   // ✅ FIXED
+    private BigDecimal pricePerNight;
     private boolean available;
 }

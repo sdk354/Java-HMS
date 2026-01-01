@@ -14,10 +14,12 @@ import java.io.IOException;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.logging.Logger;
 
 @Component
 public class RateLimitingFilter extends OncePerRequestFilter {
 
+    private static final Logger LOG = Logger.getLogger(RateLimitingFilter.class.getName());
     private final StringRedisTemplate redis;
 
     @Value("${app.ratelimit.enabled:true}")
@@ -35,9 +37,9 @@ public class RateLimitingFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        // Rate limit only "public-ish" endpoints (you can adjust)
         String path = request.getRequestURI();
-        return !path.startsWith("/api/auth/");
+        // Skip filtering for auth endpoints to prevent registration blocks
+        return path.startsWith("/api/auth/");
     }
 
     @Override
@@ -45,6 +47,7 @@ public class RateLimitingFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
+        // 1. Skip if manually disabled in properties
         if (!enabled) {
             filterChain.doFilter(request, response);
             return;
@@ -53,10 +56,10 @@ public class RateLimitingFilter extends OncePerRequestFilter {
         String ip = getClientIp(request);
         String path = request.getRequestURI();
         String minute = MINUTE_FMT.format(Instant.now());
-
         String key = "rl:" + ip + ":" + path + ":" + minute;
 
         try {
+            // 2. Attempt Redis operation
             Long count = redis.opsForValue().increment(key);
             if (count != null && count == 1) {
                 redis.expire(key, java.time.Duration.ofSeconds(60));
@@ -69,7 +72,9 @@ public class RateLimitingFilter extends OncePerRequestFilter {
                 return;
             }
         } catch (Exception e) {
-            // fail-open if Redis is down (do not crash your app)
+            // 3. FAIL-SAFE: Since you don't have Docker/Redis, catch the connection error
+            // and let the request continue to the next filter.
+            LOG.warning("Redis not available (No Docker). Skipping rate limit check for: " + path);
         }
 
         filterChain.doFilter(request, response);

@@ -1,7 +1,7 @@
 package com.nsbm_projects.hotel_management_system.realtime;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nsbm_projects.hotel_management_system.service.RoomStatusPublisher;
+import com.nsbm_projects.hotel_management_system.realtime.RoomStatusPublisher;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 

@@ -12,7 +12,5 @@ public class RoomStatusMessage {
     private Long roomId;
     private String roomNumber;
     private RoomStatus status;
-    private boolean available;
-    private String reason;     // e.g., CHECKIN, CHECKOUT, MAINTENANCE
-    private Instant timestamp;
 }
+
