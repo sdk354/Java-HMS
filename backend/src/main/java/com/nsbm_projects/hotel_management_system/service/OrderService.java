@@ -91,4 +91,36 @@ public class OrderService {
                 responseItems
         );
     }
+    @Transactional(readOnly = true)
+    public List<OrderResponse> getOrdersByStatus(OrderStatus status) {
+
+        return orderRepository.findByStatus(status)
+                .stream()
+                .map(order -> new OrderResponse(
+                        order.getId(),
+                        order.getGuest().getId(),
+                        order.getStatus(),
+                        order.getTotalAmount(),
+                        order.getCreatedAt(),
+                        order.getItems().stream()
+                                .map(i -> new OrderItemResponse(
+                                        i.getMenuItem().getId(),
+                                        i.getMenuItem().getName(),
+                                        i.getQuantity(),
+                                        i.getUnitPrice(),
+                                        i.getLineTotal()
+                                ))
+                                .toList()
+                ))
+                .toList();
+    }
+    @Transactional
+    public void updateOrderStatus(Long orderId, OrderStatus newStatus) {
+
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+
+        order.setStatus(newStatus);
+        orderRepository.save(order);
+    }
 }
