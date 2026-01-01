@@ -1,3 +1,4 @@
+  // Review trigger comment
 package com.nsbm_projects.hotel_management_system;
 
 import org.springframework.boot.SpringApplication;
@@ -11,5 +12,3 @@ public class HotelManagementSystemApplication {
 	}
 
 }
-
-// modification test
