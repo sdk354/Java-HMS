@@ -20,6 +20,7 @@ import java.util.logging.Logger;
 public class RateLimitingFilter extends OncePerRequestFilter {
 
     private static final Logger LOG = Logger.getLogger(RateLimitingFilter.class.getName());
+
     private final StringRedisTemplate redis;
 
     @Value("${app.ratelimit.enabled:true}")
@@ -29,7 +30,8 @@ public class RateLimitingFilter extends OncePerRequestFilter {
     private int limitPerMinute;
 
     private static final DateTimeFormatter MINUTE_FMT =
-            DateTimeFormatter.ofPattern("yyyyMMddHHmm").withZone(ZoneOffset.UTC);
+            DateTimeFormatter.ofPattern("yyyyMMddHHmm")
+                    .withZone(ZoneOffset.UTC);
 
     public RateLimitingFilter(StringRedisTemplate redis) {
         this.redis = redis;
@@ -38,16 +40,17 @@ public class RateLimitingFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
-        // Skip filtering for auth endpoints to prevent registration blocks
-        return path.startsWith("/api/auth/");
+        // Skip auth & actuator endpoints
+        return path.startsWith("/api/auth/")
+                || path.startsWith("/actuator/");
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
+                                    FilterChain filterChain)
+            throws ServletException, IOException {
 
-        // 1. Skip if manually disabled in properties
         if (!enabled) {
             filterChain.doFilter(request, response);
             return;
@@ -59,8 +62,8 @@ public class RateLimitingFilter extends OncePerRequestFilter {
         String key = "rl:" + ip + ":" + path + ":" + minute;
 
         try {
-            // 2. Attempt Redis operation
             Long count = redis.opsForValue().increment(key);
+
             if (count != null && count == 1) {
                 redis.expire(key, java.time.Duration.ofSeconds(60));
             }
@@ -68,13 +71,13 @@ public class RateLimitingFilter extends OncePerRequestFilter {
             if (count != null && count > limitPerMinute) {
                 response.setStatus(429);
                 response.setContentType("application/json");
-                response.getWriter().write("{\"error\":\"Too many requests. Please try again later.\"}");
+                response.getWriter()
+                        .write("{\"error\":\"Too many requests. Please try again later.\"}");
                 return;
             }
+
         } catch (Exception e) {
-            // 3. FAIL-SAFE: Since you don't have Docker/Redis, catch the connection error
-            // and let the request continue to the next filter.
-            LOG.warning("Redis not available (No Docker). Skipping rate limit check for: " + path);
+            LOG.warning("Redis unavailable, skipping rate limit for " + path);
         }
 
         filterChain.doFilter(request, response);
