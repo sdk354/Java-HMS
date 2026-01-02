@@ -17,12 +17,12 @@
 }
 
 .page {
-  margin-left: 250px;
   padding: 40px;
-  width: 100%;
-  min-height: 100vh;
   background: var(--bg-page);
   color: var(--text-main);
+  width: 100%;
+  max-width: 100%;
+  min-height: 100%;
   box-sizing: border-box;
   transition: all 0.3s ease;
 }

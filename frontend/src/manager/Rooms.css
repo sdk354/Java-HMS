@@ -1,10 +1,10 @@
 .rooms-page {
-  margin-left: 250px;                 /* same as sidebar width */
   padding: 40px;
-  width: calc(100% - 250px);          /* fixes width */
-  min-height: 100vh;
   background: var(--bg-page, #f9f9f9);
   color: var(--text-main, #111827);
+  width: 100%;
+  max-width: 100%;
+  min-height: 100%;
   box-sizing: border-box;
   transition: all 0.3s ease;
 }

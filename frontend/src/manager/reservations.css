@@ -1,9 +1,9 @@
 .reservations-page {
-  margin-left: 250px;
   padding: 40px;
-  width: calc(100% - 250px);
-  min-height: 100vh;
   background: #f5f6fa;
+  width: 100%;
+  max-width: 100%;
+  min-height: 100%;
   box-sizing: border-box;
 }
 

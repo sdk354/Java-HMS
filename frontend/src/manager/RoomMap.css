@@ -1,10 +1,10 @@
 .roommap-page {
-  margin-left: 250px;
   padding: 40px;
-  width: calc(100% - 250px);
-  min-height: 100vh;
   background: #f9f9f9;
   overflow-y: auto;
+  width: 100%;
+  max-width: 100%;
+  min-height: 100%;
   box-sizing: border-box;
 }
 
