@@ -1,0 +1,13 @@
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+/* Layout for sidebar + pages */
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+}
