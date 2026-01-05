@@ -1,0 +1,153 @@
+.roommap-page {
+  padding: 40px;
+  background: #f9f9f9;
+  overflow-y: auto;
+  width: 100%;
+  max-width: 100%;
+  min-height: 100%;
+  box-sizing: border-box;
+}
+
+.roommap-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.roommap-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.roommap-legend {
+  display: flex;
+  gap: 18px;
+}
+
+.roommap-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+}
+
+.rm-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.rm-dot-available { background: #22c55e; }
+.rm-dot-occupied { background: #ef4444; }
+.rm-dot-cleaning { background: #f97316; }
+.rm-dot-maintenance { background: #8b5cf6; }
+
+.roommap-floor-title {
+  font-size: 22px;
+  font-weight: 600;
+  margin: 20px 0 15px 0;
+}
+
+.roommap-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.roommap-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 22px;
+  border: 2px solid #22c55e;
+  text-align: center;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+}
+
+.roommap-card:hover {
+  transform: translateY(-6px) scale(1.02);
+}
+
+.roommap-number {
+  font-size: 28px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.roommap-type {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 15px;
+}
+
+.roommap-status {
+  padding: 8px;
+  border-radius: 30px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.rm-status-available { background: #bbf7d0; color: #166534; }
+.rm-status-occupied { background: #fee2e2; color: #b91c1c; }
+.rm-status-cleaning { background: #ffedd5; color: #c2410c; }
+.rm-status-maintenance { background: #ede9fe; color: #5b21b6; }
+
+.rm-status-available-border { border-color: #22c55e; }
+.rm-status-occupied-border { border-color: #ef4444; }
+.rm-status-cleaning-border { border-color: #f97316; }
+.rm-status-maintenance-border { border-color: #8b5cf6; }
+
+.rm-hover-available:hover { box-shadow: 0 15px 35px rgba(34, 197, 94, 0.35); }
+.rm-hover-occupied:hover { box-shadow: 0 15px 35px rgba(239, 68, 68, 0.35); }
+.rm-hover-cleaning:hover { box-shadow: 0 15px 35px rgba(249, 115, 22, 0.35); }
+.rm-hover-maintenance:hover { box-shadow: 0 15px 35px rgba(139, 92, 246, 0.35); }
+
+@media (max-width: 1024px) {
+  .roommap-page {
+    margin-left: 0;
+    width: 100%;
+    padding: 20px;
+  }
+
+  .roommap-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+[data-theme="dark"] .roommap-page { background: #2d3250; }
+
+[data-theme="dark"] .roommap-title,
+[data-theme="dark"] .roommap-floor-title,
+[data-theme="dark"] .roommap-number { color: #ffffff; }
+
+[data-theme="dark"] .roommap-type,
+[data-theme="dark"] .roommap-legend-item { color: #676f9d; }
+
+[data-theme="dark"] .roommap-card {
+  background: #424769;
+  border-color: #f9b17a;
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.2);
+  color: #ffffff;
+}
+
+[data-theme="dark"] .roommap-card:hover { background: #2d3250; }
+
+[data-theme="dark"] .roommap-status { color: #ffffff; }
+
+[data-theme="dark"] .rm-status-available { background: #16a34a; color: #ffffff; }
+[data-theme="dark"] .rm-status-occupied { background: #ef4444; color: #ffffff; }
+[data-theme="dark"] .rm-status-cleaning { background: #f59e0b; color: #ffffff; }
+[data-theme="dark"] .rm-status-maintenance { background: #8b5cf6; color: #ffffff; }
+
+[data-theme="dark"] .rm-status-available-border { border-color: #16a34a; }
+[data-theme="dark"] .rm-status-occupied-border { border-color: #ef4444; }
+[data-theme="dark"] .rm-status-cleaning-border { border-color: #f59e0b; }
+[data-theme="dark"] .rm-status-maintenance-border { border-color: #8b5cf6; }
+
+[data-theme="dark"] .rm-hover-available:hover { box-shadow: 0 15px 35px rgba(22, 163, 74, 0.35); }
+[data-theme="dark"] .rm-hover-occupied:hover { box-shadow: 0 15px 35px rgba(239, 68, 68, 0.35); }
+[data-theme="dark"] .rm-hover-cleaning:hover { box-shadow: 0 15px 35px rgba(245, 158, 11, 0.35); }
+[data-theme="dark"] .rm-hover-maintenance:hover { box-shadow: 0 15px 35px rgba(139, 92, 246, 0.35); }
