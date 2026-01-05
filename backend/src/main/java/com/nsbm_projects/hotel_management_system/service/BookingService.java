@@ -3,9 +3,12 @@ package com.nsbm_projects.hotel_management_system.service;
 import com.nsbm_projects.hotel_management_system.dto.BookingRequest;
 import com.nsbm_projects.hotel_management_system.dto.BookingResponse;
 import com.nsbm_projects.hotel_management_system.model.*;
+import com.nsbm_projects.hotel_management_system.realtime.RoomStatusPublisher;
 import com.nsbm_projects.hotel_management_system.repository.BookingRepository;
 import com.nsbm_projects.hotel_management_system.repository.RoomRepository;
 import com.nsbm_projects.hotel_management_system.repository.UserRepository;
+import jakarta.transaction.Transactional;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -19,15 +22,20 @@ public class BookingService {
     private final BookingRepository bookingRepository;
     private final RoomRepository roomRepository;
     private final UserRepository userRepository;
+    private final SimpMessagingTemplate messagingTemplate;
+    private final RoomStatusPublisher roomStatusPublisher;
+
 
     public BookingService(
             BookingRepository bookingRepository,
             RoomRepository roomRepository,
-            UserRepository userRepository
+            UserRepository userRepository, SimpMessagingTemplate messagingTemplate, RoomStatusPublisher roomStatusPublisher
     ) {
         this.bookingRepository = bookingRepository;
         this.roomRepository = roomRepository;
         this.userRepository = userRepository;
+        this.messagingTemplate = messagingTemplate;
+        this.roomStatusPublisher = roomStatusPublisher;
     }
 
     public BookingResponse createBooking(BookingRequest request) {
@@ -78,6 +86,32 @@ public class BookingService {
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
+    @Transactional
+    public void checkIn(Long bookingId) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found"));
+
+        Room room = booking.getRoom();
+        room.setStatus(RoomStatus.OCCUPIED);
+        roomRepository.save(room);
+
+        roomStatusPublisher.publish(room);
+    }
+
+    @Transactional
+    public void checkOut(Long bookingId) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found"));
+
+        Room room = booking.getRoom();
+        room.setStatus(RoomStatus.AVAILABLE);
+        roomRepository.save(room);
+
+        roomStatusPublisher.publish(room);
+    }
+
+
+
 
     private BookingResponse mapToResponse(Booking booking) {
         return new BookingResponse(
