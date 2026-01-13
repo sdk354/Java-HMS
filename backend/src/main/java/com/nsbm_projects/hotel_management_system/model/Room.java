@@ -24,8 +24,12 @@ public class Room {
     private String type;
 
     @Column(nullable = false)
-    private BigDecimal pricePerNight;   // ✅ FIXED
+    private BigDecimal pricePerNight;
 
     @Column(nullable = false)
     private boolean available = true;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private RoomStatus status = RoomStatus.AVAILABLE;
 }

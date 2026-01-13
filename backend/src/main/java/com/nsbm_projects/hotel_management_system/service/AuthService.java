@@ -36,7 +36,9 @@ public class AuthService {
         this.jwtService = jwtService;
     }
 
+    // ================= REGISTER =================
     public AuthResponse register(RegisterRequest request) {
+
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new IllegalArgumentException("Username already taken");
         }
@@ -44,6 +46,7 @@ public class AuthService {
             throw new IllegalArgumentException("Email already registered");
         }
 
+        // Ensure the USER role exists in the database
         Role userRole = roleRepository.findByName("USER")
                 .orElseGet(() -> roleRepository.save(new Role(null, "USER")));
 
@@ -52,28 +55,40 @@ public class AuthService {
         user.setEmail(request.getEmail());
         user.setFullName(request.getFullName());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.getRoles().add(userRole);
         user.setEnabled(true);
+
+        // Safety check: ensure the roles collection is initialized before adding
+        if (user.getRoles() == null) {
+            user.setRoles(new java.util.HashSet<>());
+        }
+        user.getRoles().add(userRole);
 
         userRepository.save(user);
 
         var claims = new HashMap<String, Object>();
-        claims.put("roles", user.getRoles().stream().map(Role::getName).toArray(String[]::new));
+        claims.put("roles",
+                user.getRoles().stream().map(Role::getName).toArray(String[]::new));
 
         String token = jwtService.generateToken(user.getUsername(), claims);
         return new AuthResponse(token, "Bearer");
     }
 
+    // ================= LOGIN =================
     public AuthResponse login(LoginRequest request) {
+
         authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
+                new UsernamePasswordAuthenticationToken(
+                        request.getUsername(),
+                        request.getPassword()
+                )
         );
 
         User user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid credentials"));
 
         var claims = new HashMap<String, Object>();
-        claims.put("roles", user.getRoles().stream().map(Role::getName).toArray(String[]::new));
+        claims.put("roles",
+                user.getRoles().stream().map(Role::getName).toArray(String[]::new));
 
         String token = jwtService.generateToken(user.getUsername(), claims);
         return new AuthResponse(token, "Bearer");

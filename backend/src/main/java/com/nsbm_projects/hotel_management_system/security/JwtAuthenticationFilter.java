@@ -26,26 +26,41 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        // Skip filtering for authentication endpoints
+        return path.startsWith("/api/auth/");
+    }
+
+    @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain chain)
             throws ServletException, IOException {
 
         String header = request.getHeader(HttpHeaders.AUTHORIZATION);
+
         if (StringUtils.hasText(header) && header.startsWith("Bearer ")) {
             String token = header.substring(7);
-            String username = jwtService.extractUsername(token);
+            try {
+                String username = jwtService.extractUsername(token);
 
-            userRepository.findByUsername(username).ifPresent(user -> {
-                if (jwtService.isTokenValid(token, username)) {
-                    var authorities = user.getRoles().stream()
-                            .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName()))
-                            .collect(Collectors.toList());
+                if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                    userRepository.findByUsername(username).ifPresent(user -> {
+                        if (jwtService.isTokenValid(token, username)) {
+                            var authorities = user.getRoles().stream()
+                                    .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName()))
+                                    .collect(Collectors.toList());
 
-                    var auth = new UsernamePasswordAuthenticationToken(username, null, authorities);
-                    SecurityContextHolder.getContext().setAuthentication(auth);
+                            var auth = new UsernamePasswordAuthenticationToken(username, null, authorities);
+                            SecurityContextHolder.getContext().setAuthentication(auth);
+                        }
+                    });
                 }
-            });
+            } catch (Exception e) {
+                // If token extraction fails, clear context to ensure 401 on protected routes
+                SecurityContextHolder.clearContext();
+            }
         }
 
         chain.doFilter(request, response);
