@@ -1,0 +1,110 @@
+/* StaffManagement.css */
+
+.glass-card.staff-card {
+  padding: 2.5rem !important; /* Enforce global padding consistency */
+  margin-top: 2rem;
+  overflow-x: auto; /* Handle smaller screens gracefully */
+}
+
+.staff-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.staff-table th {
+  padding: 1rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 0.5;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.05);
+}
+
+.staff-table td {
+  padding: 1.5rem 1rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+  font-weight: 600;
+  vertical-align: middle;
+}
+
+/* Name and Avatar Styling */
+.staff-name-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatar-placeholder {
+  width: 35px;
+  height: 35px;
+  background: var(--accent-color);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+/* Role Badges */
+.role-badge {
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.role-badge.administration { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+.role-badge.manager { background: rgba(242, 140, 56, 0.1); color: #f28c38; }
+.role-badge.housekeeping { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+
+/* Status Indicators */
+.status-indicator {
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.status-indicator::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.status-indicator.active::before { background: #10b981; }
+.status-indicator.on-leave::before { background: #f28c38; }
+
+/* Action Buttons */
+.actions-cell {
+  display: flex;
+  gap: 10px;
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 5px;
+  transition: opacity 0.2s, transform 0.1s;
+}
+
+.icon-btn.edit { color: #64748b; }
+.icon-btn.delete { color: #ef4444; }
+
+.icon-btn:hover {
+  opacity: 0.7;
+  transform: scale(1.1);
+}
+
+.email-cell {
+  opacity: 0.6;
+  font-weight: 400 !important;
+}

@@ -1,0 +1,123 @@
+/* DynamicPricing.css */
+
+.pricing-content-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.glass-card.pricing-rules-card,
+.glass-card.calculator-card {
+  padding: 2.5rem !important; /* Fixed padding for consistency */
+  min-height: 450px;
+}
+
+.section-subtitle {
+  font-size: 1.2rem;
+  font-weight: 800;
+  margin-bottom: 2rem;
+  color: var(--text-color);
+}
+
+/* Rule Items */
+.rules-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.rule-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.2rem;
+  background: rgba(0, 0, 0, 0.02);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 16px;
+}
+
+.rule-type-badge {
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--accent-color);
+  letter-spacing: 1px;
+}
+
+.rule-name {
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-top: 4px;
+}
+
+.rule-impact {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.modifier {
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.modifier.up { color: #ef4444; }
+.modifier.down { color: #10b981; }
+
+.status-pill {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 50px;
+}
+
+.status-pill.active { background: #e6f7ef; color: #10b981; }
+.status-pill.inactive { background: #f1f3f5; color: #94a3b8; }
+
+/* Calculator Preview */
+.calc-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.calc-row {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
+  color: var(--text-color);
+  opacity: 0.8;
+}
+
+.calc-row.highlighted {
+  color: #ef4444;
+  opacity: 1;
+}
+
+.calc-divider {
+  height: 1px;
+  background: rgba(0, 0, 0, 0.1);
+  margin: 1rem 0;
+}
+
+.calc-row.total {
+  opacity: 1;
+  align-items: center;
+}
+
+/* Force Stat Value Specificity */
+.calculator-card .stat-value {
+  font-size: 2.2rem !important;
+  font-weight: 800;
+  color: var(--text-color);
+}
+
+.calc-note {
+  font-size: 0.8rem;
+  opacity: 0.5;
+  margin-top: 2rem;
+  font-style: italic;
+}

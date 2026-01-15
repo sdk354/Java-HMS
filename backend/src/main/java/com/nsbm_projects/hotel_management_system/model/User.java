@@ -7,19 +7,18 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Entity
-@Table(name = "users")
+@Table(name = "`User` ") // Backticks required because 'User' is a reserved keyword
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
+@Builder
 public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "userID") // Matches your SQL PRIMARY KEY
     private Long id;
 
     @Column(unique = true, nullable = false, length = 100)
@@ -28,29 +27,20 @@ public class User implements UserDetails {
     @Column(unique = true, nullable = false, length = 150)
     private String email;
 
-    @Column(nullable = false, length = 255)
+    @Column(name = "passwordHash", nullable = false, length = 255) // Matches your SQL column
     private String password;
 
-    @Column(name = "full_name", length = 150)
+    @Column(name = "fullName", length = 150) // Matches your camelCase SQL column
     private String fullName;
 
     @Column(nullable = false)
-    private boolean enabled = true;
+    private String role; // Changed from Set<Role> to String to match your schema
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "user_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
-    private Set<Role> roles = new HashSet<>();
-
-    // 🔹 Required methods from UserDetails interface
+    // 🔹 UserDetails Implementation
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles.stream()
-                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName()))
-                .collect(Collectors.toList());
+        // Converts your single string role (e.g., "admin") into "ROLE_ADMIN"
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()));
     }
 
     @Override
@@ -64,22 +54,14 @@ public class User implements UserDetails {
     }
 
     @Override
-    public boolean isAccountNonExpired() {
-        return true; // you can add logic later
-    }
+    public boolean isAccountNonExpired() { return true; }
 
     @Override
-    public boolean isAccountNonLocked() {
-        return true; // you can add logic later
-    }
+    public boolean isAccountNonLocked() { return true; }
 
     @Override
-    public boolean isCredentialsNonExpired() {
-        return true; // you can add logic later
-    }
+    public boolean isCredentialsNonExpired() { return true; }
 
     @Override
-    public boolean isEnabled() {
-        return this.enabled;
-    }
+    public boolean isEnabled() { return true; }
 }

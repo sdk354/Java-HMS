@@ -1,0 +1,116 @@
+/* CleaningTasks.css */
+
+/* 1. Grid Layout for Task Cards */
+.tasks-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+  width: 100%;
+}
+
+/* 2. Unified Glass Card Styling */
+.glass-card.task-card {
+  background: var(--card-bg);
+  border: 1px solid rgba(224, 228, 242, 0.5);
+  border-radius: 24px;
+
+  /* Force padding to prevent content from touching edges as seen in previous builds */
+  padding: 2.5rem !important;
+
+  display: flex;
+  flex-direction: column;
+  min-height: 280px;
+  justify-content: space-between;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.glass-card.task-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+}
+
+/* 3. Task Header (Room # and Priority) */
+.task-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+}
+
+.room-label {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--text-color);
+}
+
+/* Priority Tags */
+.priority-tag {
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 5px 12px;
+  border-radius: 50px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.priority-tag.high { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+.priority-tag.medium { background: rgba(242, 140, 56, 0.1); color: #f28c38; }
+.priority-tag.low { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+
+/* 4. Task Body Details */
+.task-details {
+  margin-bottom: 2rem;
+}
+
+.detail-row {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+
+.detail-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: var(--text-color);
+  opacity: 0.5;
+  margin-bottom: 4px;
+}
+
+.detail-value {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+/* 5. Footer and Status */
+.task-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.task-status-text {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--accent-color); /* Uses Administration Red */
+}
+
+.admin-action-btn {
+  background-color: var(--accent-color) !important;
+  color: white;
+  border: none;
+  padding: 0.7rem 1.2rem;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.admin-action-btn:hover {
+  opacity: 0.9;
+}

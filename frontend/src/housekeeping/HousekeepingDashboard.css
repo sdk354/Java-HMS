@@ -1,0 +1,29 @@
+.hk-dashboard {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.hk-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.stat-card {
+  min-height: 180px;
+}
+
+.stat-label {
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  opacity: 0.6;
+}
+
+.stat-value {
+  font-size: 3rem;
+  font-weight: 300;
+  margin: 10px 0;
+}

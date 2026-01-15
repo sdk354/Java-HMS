@@ -13,9 +13,16 @@ body,
 /* Dark/Light Mode Slider */
 .theme-slider {
   position: fixed;
-  top: 1rem;
-  right: 1rem;
+  bottom: 2rem;
+  right: 2rem;
   z-index: 1000;
+  background: var(--card-bg);
+  padding: 8px;
+  border-radius: 50px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  transition: all 0.3s ease;
 }
 
 .theme-slider input {
@@ -114,9 +121,9 @@ body,
   inset: 0;
   background: linear-gradient(
           135deg,
-          #2d3250 0%,
+          #000000 0%,
           #424769 40%,
-          #f9b17a 100%
+          #652f06 100%
   );
   opacity: 0;
   transition: opacity 0.4s ease-in-out;

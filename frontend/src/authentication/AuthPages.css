@@ -1,0 +1,166 @@
+/* Authentication Page Wrapper */
+.auth-page {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100dvh;
+  overflow: hidden;
+}
+
+/* Light Mode Gradient */
+.auth-page::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #f5f6fa 0%, #e0e4f2 40%, #f28c38 100%);
+  transition: opacity 0.4s ease-in-out;
+  z-index: 0;
+}
+
+/* Dark Mode Gradient Overlay */
+.auth-page::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #000000 0%, #424769 40%, #652f06 100%);
+  opacity: 0;
+  transition: opacity 0.4s ease-in-out;
+  z-index: 0;
+}
+
+[data-theme="dark"] .auth-page::after {
+  opacity: 1;
+}
+
+/* The Card (Used by both Login and Register) */
+.auth-card {
+  position: relative;
+  z-index: 1;
+  background-color: var(--card-bg); /* */
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 400px;
+  text-align: left;
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+.login-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: var(--text-color);
+}
+
+.login-subtitle {
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+  color: var(--text-color);
+  opacity: 0.7;
+}
+
+/* Form Styling */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1.25rem;
+}
+
+.form-group label {
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--text-color);
+}
+
+.form-group input {
+  padding: 0.85rem;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  font-size: 1rem;
+  background-color: var(--bg-color); /* */
+  color: var(--text-color);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+[data-theme="dark"] .form-group input {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.form-group input:focus {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px rgba(242, 140, 56, 0.2);
+  outline: none;
+}
+
+/* Shared Buttons */
+.button-accent {
+  /* This variable is now dynamically updated by App.jsx
+     to #e67e22 (Light) or #5c67a3 (Dark) on Auth pages */
+  background-color: var(--accent-color);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.85rem 1.2rem;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  /* Added background-color to the transition for the theme switch */
+  transition: transform 0.1s ease, filter 0.2s ease, background-color 0.4s ease-in-out;
+  width: 100%;
+  margin-top: 0.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.button-accent:hover {
+  background-color: #f39c12;
+  transform: translateY(-1px);
+}
+
+[data-theme="dark"] .button-accent:hover {
+  background-color: #727dbd; /* Brighter version of the dark blue */
+}
+
+.button-accent:active {
+  transform: translateY(0);
+}
+
+/* Links & Redirect Text */
+.register-text {
+  color: var(--text-color);
+  text-align: center;
+  margin-top: 1.5rem;
+  font-size: 0.9rem;
+}
+
+.register-link {
+  color: var(--accent-color);
+  font-weight: 700;
+  text-decoration: none;
+  transition: opacity 0.2s ease, color 0.4s ease-in-out;
+}
+
+.register-link:hover {
+  text-decoration: underline;
+  opacity: 0.8;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.form-group input:focus {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05); /* Very light glow */
+  outline: none;
+}
+
+@media (max-width: 480px) {
+  .auth-card {
+    padding: 1.5rem;
+    width: 90%;
+  }
+}

@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
+// CRITICAL: Allow your React app (port 3000 or 5173) to access these endpoints
+@CrossOrigin(origins = {"http://localhost:4173"})
 public class AuthController {
 
     private final AuthService authService;
@@ -24,12 +26,14 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
+        // This now returns the token, role, fullName, and id
         return ResponseEntity.ok(authService.login(request));
     }
 
     @GetMapping("/me")
     public ResponseEntity<String> me() {
-        // If JWT is valid, Spring Security sets Authentication
+        // Currently returns a string; in the future, we can change this to return
+        // the user profile so the frontend stays synced on refresh.
         return ResponseEntity.ok("You are authenticated.");
     }
 }

@@ -1,0 +1,113 @@
+/* AdminDashboard.css */
+
+.admin-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+/* Specificity fix for the glass-card padding */
+.glass-card.stat-card {
+  padding: 2.5rem !important;
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 1px solid rgba(239, 68, 68, 0.2); /* Subtle Admin Red border */
+}
+
+.stat-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.stat-icon-wrapper {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+
+.stat-trend {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #10b981;
+}
+
+.stat-card-body {
+  display: flex;
+  flex-direction: column;
+  margin-top: 1.5rem;
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 0.6;
+  color: var(--text-color);
+  margin-bottom: 0.5rem;
+}
+
+/* Force Stat Value Size to override global 3rem/1rem conflicts */
+.stat-card .stat-value {
+  font-size: 2.5rem !important;
+  font-weight: 800;
+  color: var(--text-color);
+  line-height: 1;
+}
+
+/* Lower Section Layout */
+.dashboard-lower-section {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.chart-placeholder, .recent-alerts {
+  padding: 2rem !important;
+  min-height: 300px;
+}
+
+.placeholder-visual {
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.02);
+  border: 2px dashed rgba(0,0,0,0.05);
+  border-radius: 16px;
+  margin-top: 1.5rem;
+}
+
+.alert-list {
+  list-style: none;
+  padding: 0;
+  margin-top: 1.5rem;
+}
+
+.alert-list li {
+  padding: 1rem 0;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.95rem;
+}
+
+.alert-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.alert-dot.red { background: #ef4444; }
+.alert-dot.orange { background: #f28c38; }

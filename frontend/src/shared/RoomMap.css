@@ -1,153 +1,239 @@
-.roommap-page {
-  padding: 40px;
-  background: #f9f9f9;
-  overflow-y: auto;
-  width: 100%;
-  max-width: 100%;
-  min-height: 100%;
-  box-sizing: border-box;
-}
-
-.roommap-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 25px;
-}
-
-.roommap-title {
-  font-size: 32px;
-  font-weight: 700;
-  color: #111827;
-}
-
-.roommap-legend {
-  display: flex;
-  gap: 18px;
-}
-
-.roommap-legend-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 14px;
-}
-
-.rm-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-}
-
-.rm-dot-available { background: #22c55e; }
-.rm-dot-occupied { background: #ef4444; }
-.rm-dot-cleaning { background: #f97316; }
-.rm-dot-maintenance { background: #8b5cf6; }
-
-.roommap-floor-title {
-  font-size: 22px;
-  font-weight: 600;
-  margin: 20px 0 15px 0;
-}
-
-.roommap-grid {
+.live-map-container {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
+  grid-template-columns: 320px 1fr;
+  height: calc(100vh - 70px);
+  background: var(--bg-primary);
+  color: var(--text-color);
 }
 
-.roommap-card {
-  background: #ffffff;
-  border-radius: 16px;
-  padding: 22px;
-  border: 2px solid #22c55e;
-  text-align: center;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
-  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.05);
+/* Sidebar & Inspector */
+.map-sidebar {
+  background: var(--bg-secondary);
+  border-right: 1px solid var(--border-color);
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.map-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin: 0;
+}
+
+.floor-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.floor-btn {
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: transparent;
+  color: var(--text-color);
   cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+  text-align: left;
 }
 
-.roommap-card:hover {
-  transform: translateY(-6px) scale(1.02);
+.floor-btn.active {
+  background: var(--accent-color);
+  color: white;
+  border-color: var(--accent-color);
 }
 
-.roommap-number {
-  font-size: 28px;
-  font-weight: 700;
-  color: #111827;
+/* Floor Plan Canvas */
+.floor-plan-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 110px);
+  grid-template-rows: 140px 50px 140px;
+  gap: 15px;
+  background: var(--bg-secondary);
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+  border: 1px solid var(--border-color);
 }
 
-.roommap-type {
-  font-size: 14px;
-  color: #6b7280;
-  margin-bottom: 15px;
+.hallway {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  background: var(--bg-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  letter-spacing: 4px;
+  color: var(--text-secondary);
+  opacity: 0.5;
+  border-radius: 4px;
+  border: 1px dashed var(--border-color);
+  font-size: 0.8rem;
 }
 
-.roommap-status {
-  padding: 8px;
-  border-radius: 30px;
-  font-size: 13px;
-  font-weight: 700;
+/* Room Blocks: High Contrast Update */
+.room-block {
+  /* Darker base for better contrast */
+  background: rgba(128, 128, 128, 0.2);
+  border-radius: 12px;
+  color: var(--text-color);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  position: relative;
+  /* Thicker border for visibility */
+  border: 3px solid var(--border-color);
 }
 
-.rm-status-available { background: #bbf7d0; color: #166534; }
-.rm-status-occupied { background: #fee2e2; color: #b91c1c; }
-.rm-status-cleaning { background: #ffedd5; color: #c2410c; }
-.rm-status-maintenance { background: #ede9fe; color: #5b21b6; }
-
-.rm-status-available-border { border-color: #22c55e; }
-.rm-status-occupied-border { border-color: #ef4444; }
-.rm-status-cleaning-border { border-color: #f97316; }
-.rm-status-maintenance-border { border-color: #8b5cf6; }
-
-.rm-hover-available:hover { box-shadow: 0 15px 35px rgba(34, 197, 94, 0.35); }
-.rm-hover-occupied:hover { box-shadow: 0 15px 35px rgba(239, 68, 68, 0.35); }
-.rm-hover-cleaning:hover { box-shadow: 0 15px 35px rgba(249, 115, 22, 0.35); }
-.rm-hover-maintenance:hover { box-shadow: 0 15px 35px rgba(139, 92, 246, 0.35); }
-
-@media (max-width: 1024px) {
-  .roommap-page {
-    margin-left: 0;
-    width: 100%;
-    padding: 20px;
-  }
-
-  .roommap-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+/* Stronger Surround Borders and deeper status tints */
+.room-block.available {
+  border-color: #1b5e20; /* Deep Forest Green */
+  background: rgba(27, 94, 32, 0.15);
 }
 
-[data-theme="dark"] .roommap-page { background: #2d3250; }
+.room-block.occupied {
+  border-color: #b71c1c; /* Deep Crimson Red */
+  background: rgba(183, 28, 28, 0.15);
+}
 
-[data-theme="dark"] .roommap-title,
-[data-theme="dark"] .roommap-floor-title,
-[data-theme="dark"] .roommap-number { color: #ffffff; }
+.room-block.cleaning {
+  border-color: #e65100; /* Deep Burnt Orange */
+  background: rgba(230, 81, 0, 0.15);
+}
 
-[data-theme="dark"] .roommap-type,
-[data-theme="dark"] .roommap-legend-item { color: #676f9d; }
+.room-block.maintenance {
+  border-color: #4527a0; /* Deep Royal Purple */
+  background: rgba(69, 39, 160, 0.15);
+}
 
-[data-theme="dark"] .roommap-card {
-  background: #424769;
-  border-color: #f9b17a;
-  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.2);
+/* Selection State Glow */
+.room-block.selected {
+  transform: scale(1.05);
+  z-index: 10;
+}
+
+/* Updated Selection Glows to match the new darker palette */
+.room-block.selected.available { box-shadow: 0 0 25px rgba(27, 94, 32, 0.5); }
+.room-block.selected.occupied { box-shadow: 0 0 25px rgba(183, 28, 28, 0.5); }
+.room-block.selected.cleaning { box-shadow: 0 0 25px rgba(230, 81, 0, 0.5); }
+.room-block.selected.maintenance { box-shadow: 0 0 25px rgba(69, 39, 160, 0.5); }
+
+.room-label {
+  font-weight: 900;
+  font-size: 1.2rem;
+  letter-spacing: -0.5px;
+}
+
+/* Room Inspector: Lighter Card Style Update */
+.room-inspector {
+  /* Forced light background for card look */
+  background: #ffffff;
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-left: 6px solid var(--accent-color);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  color: #1a1a1a; /* Dark text for the light card */
+}
+
+/* Dark Mode adaptation for the card */
+[data-theme='dark'] .room-inspector {
+  background: var(--card-bg);
+  border-color: rgba(255, 255, 255, 0.1);
   color: #ffffff;
 }
 
-[data-theme="dark"] .roommap-card:hover { background: #2d3250; }
+.inspector-row {
+  display: flex;
+  justify-content: space-between;
+  margin: 12px 0;
+  font-size: 0.9rem;
+}
 
-[data-theme="dark"] .roommap-status { color: #ffffff; }
+.inspector-row span:first-child {
+  color: #666; /* Gray text for labels on light card */
+}
 
-[data-theme="dark"] .rm-status-available { background: #16a34a; color: #ffffff; }
-[data-theme="dark"] .rm-status-occupied { background: #ef4444; color: #ffffff; }
-[data-theme="dark"] .rm-status-cleaning { background: #f59e0b; color: #ffffff; }
-[data-theme="dark"] .rm-status-maintenance { background: #8b5cf6; color: #ffffff; }
+[data-theme='dark'] .inspector-row span:first-child {
+  color: #aaa;
+}
 
-[data-theme="dark"] .rm-status-available-border { border-color: #16a34a; }
-[data-theme="dark"] .rm-status-occupied-border { border-color: #ef4444; }
-[data-theme="dark"] .rm-status-cleaning-border { border-color: #f59e0b; }
-[data-theme="dark"] .rm-status-maintenance-border { border-color: #8b5cf6; }
+.inspector-divider {
+  border: 0;
+  border-top: 1px solid rgba(0,0,0,0.1);
+  margin: 15px 0;
+}
 
-[data-theme="dark"] .rm-hover-available:hover { box-shadow: 0 15px 35px rgba(22, 163, 74, 0.35); }
-[data-theme="dark"] .rm-hover-occupied:hover { box-shadow: 0 15px 35px rgba(239, 68, 68, 0.35); }
-[data-theme="dark"] .rm-hover-cleaning:hover { box-shadow: 0 15px 35px rgba(245, 158, 11, 0.35); }
-[data-theme="dark"] .rm-hover-maintenance:hover { box-shadow: 0 15px 35px rgba(139, 92, 246, 0.35); }
+[data-theme='dark'] .inspector-divider {
+  border-top-color: rgba(255,255,255,0.1);
+}
+
+.action-btn {
+  width: 100%;
+  padding: 12px;
+  background: var(--accent-color);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.action-btn:hover {
+  opacity: 0.9;
+}
+
+.inspector-placeholder {
+  color: var(--text-secondary);
+  font-style: italic;
+  text-align: center;
+  margin-top: 20px;
+}
+
+/* Map Viewport & Legend */
+.map-viewport {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.map-legend-bottom {
+  margin-top: 2rem;
+  display: flex;
+  gap: 24px;
+  padding: 12px 24px;
+  background: var(--bg-secondary);
+  border-radius: 50px;
+  border: 1px solid var(--border-color);
+}
+
+.leg-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.dot { width: 10px; height: 10px; border-radius: 50%; }
+.dot.avail { background: #1b5e20; }  /* Deep Forest Green */
+.dot.occu { background: #b71c1c; }   /* Deep Crimson Red */
+.dot.clean { background: #e65100; }  /* Deep Burnt Orange */
+.dot.maint { background: #4527a0; }  /* Deep Royal Purple */
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-15px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.animate-slide-in { animation: slideIn 0.3s ease-out; }

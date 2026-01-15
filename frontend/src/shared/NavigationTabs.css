@@ -1,32 +1,80 @@
 .nav-wrapper {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 1rem 2rem;
+  position: relative;
+  padding: 0 2rem;
   background: var(--bg-primary);
   border-bottom: 1px solid var(--border-color);
+  height: 70px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-.nav-brand { display: flex; align-items: center; gap: 12px; }
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 2;
+  min-width: fit-content;
+}
+
 .hotel-logo {
+  /* Smooth color transition when role changes */
   background: var(--accent-color);
   color: white;
-  width: 40px; height: 40px;
-  display: flex; align-items: center; justify-content: center;
-  border-radius: 10px; font-weight: bold;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  font-weight: 900;
+  transition: background 0.3s ease;
 }
 
-.brand-text { display: flex; flex-direction: column; }
-.hotel-name { font-weight: 800; font-size: 1.1rem; }
-.role-tag { font-size: 0.7rem; text-transform: uppercase; font-weight: 700; letter-spacing: 1px; }
+/* Standardized container for vertical text alignment */
+.brand-text,
+.user-info-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
 
+.hotel-name,
+.user-display-name {
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: var(--text-color);
+  line-height: 1.5;
+  margin: 0;
+}
 
+.role-tag,
+.logout-inline-btn {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  margin: 0;
+  padding: 0;
+  line-height: 1.4;
+  display: block;
+  transition: color 0.3s ease;
+}
+
+/* THE CENTERING FIX */
 .tab-container {
   display: flex;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
   background: var(--bg-secondary);
   padding: 5px;
   border-radius: 50px;
   gap: 5px;
+  z-index: 1;
+  max-width: 60%;
 }
 
 .tab {
@@ -34,13 +82,142 @@
   border-radius: 50px;
   text-decoration: none;
   font-size: 0.9rem;
-  font-weight: 500;
+  font-weight: 700;
   color: var(--text-secondary);
+  background-color: transparent;
   transition: all 0.3s ease;
+  white-space: nowrap;
 }
 
 .tab.active {
-  background: var(--accent-color); 
+  background: var(--accent-color) !important;
+  color: white !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.tab:hover:not(.active) {
+  color: var(--accent-color);
+}
+
+/* UTILS: RIGHT-ALIGNED USER SECTION */
+.nav-utils {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  z-index: 2;
+}
+
+.user-profile-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: right;
+  min-width: fit-content;
+}
+
+.user-info-text {
+  align-items: flex-end;
+}
+
+.logout-inline-btn {
+  background: none;
+  border: none;
+  color: var(--accent-color);
+  cursor: pointer;
+}
+
+.logout-inline-btn:hover {
+  opacity: 0.7;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  background: var(--accent-color);
   color: white;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 0.8rem;
+  transition: background 0.3s ease;
+}
+
+.avatar-container {
+  position: relative;
+  z-index: 10;
+}
+
+/* RESPONSIVE DROPDOWN LOGIC */
+.more-trigger {
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.more-dropdown {
+  position: absolute;
+  top: calc(100% + 15px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-primary);
+  border-radius: 12px;
+  padding: 8px;
+  min-width: 180px;
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.25);
+  border: 1px solid var(--border-color);
+  z-index: 100;
+}
+
+.more-trigger:hover .more-dropdown {
+  display: flex;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.more-item {
+  padding: 12px 18px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--text-color);
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.more-item:hover, .more-item.active {
+  background: var(--accent-color);
+  color: white;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translate(-50%, -10px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+@media (max-width: 1100px) {
+  .tab-container {
+    max-width: 50%;
+  }
+  .tab {
+    padding: 8px 12px;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 850px) {
+  .brand-text, .user-info-text {
+    display: none;
+  }
+  .tab-container {
+    position: static;
+    transform: none;
+    margin: 0 auto;
+    max-width: none;
+  }
 }

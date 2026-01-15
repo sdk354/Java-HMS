@@ -3,18 +3,15 @@
   line-height: 1.5;
   font-weight: 400;
 
-  /* Base Theme Variables */
+  /* Base Theme Variables - Light Mode */
   --bg-color: #f8fafc;
   --text-color: #1e293b;
   --card-bg: #ffffff;
-  --accent-color: #646cff;
-  --button-bg: #f28c38;
-  --button-hover: #d9772b;
-  --button-text: #fff;
-  --link-hover: #535bf2;
 
-  color: var(--text-color);
-  background-color: var(--bg-color);
+  --accent-color: #f28c38;
+  --link-hover: transparent;
+
+  --button-text: #fff;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -22,63 +19,47 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Dark Theme */
+/* 1. FIX: Apply theme variables to the scope where data-theme is applied */
 [data-theme="dark"] {
   --bg-color: #0f172a;
   --text-color: #f1f5f9;
   --card-bg: #1e293b;
-  --accent-color: #f28c38;
-  --button-bg: #d9772b;
-  --button-hover: #92400e;
   --button-text: #f1f5f9;
-  --link-hover: #f28c38;
 }
 
-/* Role-Based Accent Variants */
-[data-role="guest"] {
-  --accent-color: #f9b17a;
+/* 2. FIX: Ensure the background color actually uses the variable on the container */
+body, .app-container {
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-[data-role="housekeeping"] {
-  --accent-color: #7a82b8;
-}
-
-[data-role="manager"] {
-  --accent-color: #676f9d;
-}
-
-[data-role="admin"] {
-  --accent-color: #2d3250;
-}
+/* Role-Based Accent Variants - These act as the first paint fallback */
+[data-role="guest"] { --accent-color: #f9b17a; }
+[data-role="housekeeping"] { --accent-color: #7a82b8; }
+[data-role="manager"] { --accent-color: #f28c38; } /* Matched to your dashboard highlight */
+[data-role="administration"] { --accent-color: #ef4444; }
 
 /* Links */
 a {
   font-weight: 500;
-  color: var(--accent-color);
+  /* Use inherit as base so it doesn't flash purple before the role loads */
+  color: inherit;
   text-decoration: none;
   transition: color 0.2s ease;
 }
 
-a:hover {
-  color: var(--link-hover);
-}
-
-/* Body Reset */
-body {
-  margin: 0;
-  display: block;
-  min-width: 320px;
-  min-height: 100vh;
-  background-color: var(--bg-color);
-  color: var(--text-color);
+/* Targeted rule for active links to ensure they use the dynamic accent */
+a.active {
+  color: var(--accent-color);
 }
 
 /* Headings */
-h1 {
-  font-size: 2.5em;
-  line-height: 1.1;
-  margin-bottom: 0.5em;
+h1, h2, h3, h4 {
   color: var(--text-color);
+  margin-bottom: 0.5em;
 }
 
 /* Buttons */
@@ -96,17 +77,10 @@ button {
 }
 
 button:hover {
-  background-color: var(--link-hover);
+  filter: brightness(1.1);
 }
 
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #f8fafc;
-  }
+/* Remove tap highlight for Safari global links */
+a, button {
+  -webkit-tap-highlight-color: transparent;
 }
