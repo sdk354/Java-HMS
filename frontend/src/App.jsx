@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route, useLocation, Navigate, useNavigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from "react-router-dom";
 
 import "./App.css";
 import { FaSun, FaMoon } from "react-icons/fa";
 
 import NavigationTabs from "./shared/NavigationTabs";
 import RoomMap from "./shared/RoomMap";
+import Unauthorized from "./shared/Unauthorized";
 
 import Login from "./authentication/Login";
 import Register from "./authentication/Register";
@@ -31,146 +32,99 @@ import CleaningTasks from "./administration/CleaningTasks";
 import DynamicPricing from "./administration/DynamicPricing";
 import StaffManagement from "./administration/StaffManagement";
 
-const AppContent = ({ theme, toggleTheme }) => {
-	const navigate = useNavigate();
+/**
+ * FIXED ProtectedRoute
+ * Breaks the loop by removing the aggressive redirect from public pages.
+ */
+const ProtectedRoute = ({ children, allowedRole, isPublic = false }) => {
+	const token = localStorage.getItem("token");
+	const userRole = localStorage.getItem("role");
+
+	if (isPublic) {
+		return children;
+	}
+
+	if (!token || !userRole) {
+		return <Navigate to="/login" replace />;
+	}
+
+	if (allowedRole && userRole.toLowerCase() !== allowedRole.toLowerCase()) {
+		return <Unauthorized />;
+	}
+
+	return children;
+};
+
+const AppContent = ({ theme, toggleTheme, user }) => {
 	const location = useLocation();
 
-	// Standard brand colors for dashboards
 	const roleColors = {
 		manager: "#f28c38",
 		guest: "#676f9d",
 		housekeeping: "#10b981",
-		administration: "#ef4444",
+		admin: "#ef4444",
 	};
 
 	const isAuthPage = ["/login", "/register", "/"].includes(location.pathname);
 
-	// Extract path and map 'admin' to 'administration'
-	const pathPart = location.pathname.split("/")[1] || "guest";
-	const currentRole = pathPart === "admin" ? "administration" : pathPart;
+	// Improved path extraction
+	const pathPart = location.pathname.split("/").filter(Boolean)[0] || "guest";
 
-	// Determine Accent Color: Specific subtle tones for Auth, Role-based for others
-	const getAccentColor = () => {
-		if (isAuthPage) {
-			return theme === "light" ? "#e67e22" : "#5c67a3";
-		}
-		return roleColors[currentRole] || roleColors.guest;
-	};
+	const accentColor = isAuthPage
+		? (theme === "light" ? "#e67e22" : "#5c67a3")
+		: (roleColors[pathPart] || roleColors.guest);
 
-	const accentColor = getAccentColor();
-
-	const tabsByRole = {
-		manager: [
-			"/manager/dashboard",
-			"/manager/reservations",
-			"/manager/rooms",
-			"/manager/map",
-			"/manager/complaints"
-		],
-		guest: [
-			"/guest/dashboard",
-			"/guest/rooms",
-			"/guest/map",
-			"/guest/book",
-			"/guest/my-reservations",
-			"/guest/services",
-			"/guest/complaints"
-		],
-		housekeeping: [
-			"/housekeeping/dashboard",
-			"/housekeeping/tasks",
-			"/housekeeping/map",
-			"/housekeeping/complaints"
-		],
-		administration: [
-			"/admin/dashboard",
-			"/admin/rooms",
-			"/admin/map",
-			"/admin/reservations",
-			"/admin/tasks",
-			"/admin/pricing",
-			"/admin/staff"
-		]
-	};
-
-	// Update the CSS Variable globally
+	// Keep the property sync for child components that might use documentElement
 	useEffect(() => {
 		document.documentElement.style.setProperty("--accent-color", accentColor);
 	}, [accentColor]);
 
-	// Keyboard navigation (Ctrl/Cmd + Arrows)
-	useEffect(() => {
-		const handleKeyDown = (event) => {
-			if ((event.ctrlKey || event.metaKey) && (event.key === "ArrowRight" || event.key === "ArrowLeft")) {
-				const currentTabs = tabsByRole[currentRole];
-				if (!currentTabs || isAuthPage) return;
-
-				const currentIndex = currentTabs.indexOf(location.pathname);
-				if (currentIndex === -1) return;
-
-				event.preventDefault();
-
-				if (event.key === "ArrowRight") {
-					const nextIndex = (currentIndex + 1) % currentTabs.length;
-					navigate(currentTabs[nextIndex]);
-				} else if (event.key === "ArrowLeft") {
-					const prevIndex = (currentIndex - 1 + currentTabs.length) % currentTabs.length;
-					navigate(currentTabs[prevIndex]);
-				}
-			}
-		};
-
-		window.addEventListener("keydown", handleKeyDown);
-		return () => window.removeEventListener("keydown", handleKeyDown);
-	}, [location.pathname, currentRole, navigate, isAuthPage]);
-
 	return (
-		<div className={isAuthPage ? "auth-page" : "app-layout"}>
+		<div
+			className={isAuthPage ? "auth-page" : "app-layout"}
+			/* FIX: Setting variable inline prevents the "orange flash" transition on load */
+			style={{ "--accent-color": accentColor }}
+		>
 			{!isAuthPage && (
-				<NavigationTabs userRole={currentRole} toggleTheme={toggleTheme} />
+				<NavigationTabs userRole={pathPart} toggleTheme={toggleTheme} />
 			)}
 
 			<main className={isAuthPage ? "" : "main-content"}>
 				<Routes>
-					<Route path="/login" element={<Login />} />
-					<Route path="/register" element={<Register />} />
-					<Route path="/" element={<Navigate to="/login" />} />
+					{/* --- Public --- */}
+					<Route path="/login" element={<ProtectedRoute isPublic><Login /></ProtectedRoute>} />
+					<Route path="/register" element={<ProtectedRoute isPublic><Register /></ProtectedRoute>} />
 
-					{/* --- Shared Routes --- */}
-					{/* Any role besides admin should be able to see all the complaints */}
-					{!location.pathname.startsWith('/admin') && (
-						<Route path="/:role/complaints" element={<div className="p-8"><h2>Complaints Registry</h2><p>Viewing all hotel complaints...</p></div>} />
-					)}
+					{/* --- Guest --- */}
+					<Route path="/guest/dashboard" element={<ProtectedRoute allowedRole="guest"><GuestDashboard user={user} /></ProtectedRoute>} />
+					<Route path="/guest/rooms" element={<ProtectedRoute allowedRole="guest"><BrowseRooms user={user} /></ProtectedRoute>} />
+					<Route path="/guest/map" element={<ProtectedRoute allowedRole="guest"><RoomMap userRole="guest" user={user} /></ProtectedRoute>} />
+					<Route path="/guest/book" element={<ProtectedRoute allowedRole="guest"><NewReservation user={user} /></ProtectedRoute>} />
+					<Route path="/guest/my-reservations" element={<ProtectedRoute allowedRole="guest"><MyReservations user={user} /></ProtectedRoute>} />
+					<Route path="/guest/services" element={<ProtectedRoute allowedRole="guest"><RoomService user={user} /></ProtectedRoute>} />
 
-					{/* --- Guest Routes --- */}
-					<Route path="/guest/dashboard" element={<GuestDashboard />} />
-					<Route path="/guest/rooms" element={<BrowseRooms />} />
-					<Route path="/guest/map" element={<RoomMap userRole={currentRole} />} />
-					<Route path="/guest/book" element={<NewReservation />} />
-					<Route path="/guest/my-reservations" element={<MyReservations />} />
-					<Route path="/guest/services" element={<RoomService />} />
+					{/* --- Housekeeping --- */}
+					<Route path="/housekeeping/dashboard" element={<ProtectedRoute allowedRole="housekeeping"><HousekeepingDashboard user={user} /></ProtectedRoute>} />
+					<Route path="/housekeeping/tasks" element={<ProtectedRoute allowedRole="housekeeping"><TaskBoard user={user} /></ProtectedRoute>} />
+					<Route path="/housekeeping/map" element={<ProtectedRoute allowedRole="housekeeping"><RoomMap userRole="housekeeping" user={user} /></ProtectedRoute>} />
 
-					{/* --- Housekeeping Routes --- */}
-					<Route path="/housekeeping/dashboard" element={<HousekeepingDashboard />} />
-					<Route path="/housekeeping/tasks" element={<TaskBoard />} />
-					<Route path="/housekeeping/map" element={<RoomMap userRole={currentRole} />} />
+					{/* --- Manager --- */}
+					<Route path="/manager/dashboard" element={<ProtectedRoute allowedRole="manager"><ManagerDashboard user={user} /></ProtectedRoute>} />
+					<Route path="/manager/map" element={<ProtectedRoute allowedRole="manager"><RoomMap userRole="manager" user={user} /></ProtectedRoute>} />
+					<Route path="/manager/rooms" element={<ProtectedRoute allowedRole="manager"><Rooms user={user} /></ProtectedRoute>} />
+					<Route path="/manager/reservations" element={<ProtectedRoute allowedRole="manager"><Reservations user={user} /></ProtectedRoute>} />
 
-					{/* --- Manager Routes --- */}
-					<Route path="/manager/dashboard" element={<ManagerDashboard />} />
-					<Route path="/manager/map" element={<RoomMap userRole={currentRole} />} />
-					<Route path="/manager/rooms" element={<Rooms />} />
-					<Route path="/manager/reservations" element={<Reservations />} />
+					{/* --- Admin --- */}
+					<Route path="/admin/dashboard" element={<ProtectedRoute allowedRole="admin"><AdminDashboard user={user} /></ProtectedRoute>} />
+					<Route path="/admin/rooms" element={<ProtectedRoute allowedRole="admin"><AdminRooms user={user} /></ProtectedRoute>} />
+					<Route path="/admin/map" element={<ProtectedRoute allowedRole="admin"><RoomMap userRole="admin" user={user} /></ProtectedRoute>} />
+					<Route path="/admin/reservations" element={<ProtectedRoute allowedRole="admin"><AdminReservations user={user} /></ProtectedRoute>} />
+					<Route path="/admin/tasks" element={<ProtectedRoute allowedRole="admin"><CleaningTasks user={user} /></ProtectedRoute>} />
+					<Route path="/admin/pricing" element={<ProtectedRoute allowedRole="admin"><DynamicPricing user={user} /></ProtectedRoute>} />
+					<Route path="/admin/staff" element={<ProtectedRoute allowedRole="admin"><StaffManagement user={user} /></ProtectedRoute>} />
 
-					{/* --- Administration Routes --- */}
-					<Route path="/admin/dashboard" element={<AdminDashboard />} />
-					<Route path="/admin/rooms" element={<AdminRooms />} />
-					<Route path="/admin/map" element={<RoomMap userRole={currentRole} />} />
-					<Route path="/admin/reservations" element={<AdminReservations />} />
-					<Route path="/admin/tasks" element={<CleaningTasks />} />
-					<Route path="/admin/pricing" element={<DynamicPricing />} />
-					<Route path="/admin/staff" element={<StaffManagement />} />
-
-					<Route path="*" element={<Navigate to="/login" />} />
+					<Route path="/" element={<Navigate to="/login" replace />} />
+					<Route path="*" element={<Navigate to="/login" replace />} />
 				</Routes>
 			</main>
 		</div>
@@ -179,25 +133,31 @@ const AppContent = ({ theme, toggleTheme }) => {
 
 function App() {
 	const [theme, setTheme] = useState("light");
+
+	// Initialize user state from localStorage
+	const [user, setUser] = useState(() => {
+		const saved = localStorage.getItem("user");
+		try {
+			return saved ? JSON.parse(saved) : null;
+		} catch (e) {
+			return null;
+		}
+	});
+
 	const toggleTheme = () => setTheme((prev) => (prev === "light" ? "dark" : "light"));
 
 	return (
 		<Router>
 			<div data-theme={theme} className="app-container">
 				<div className="theme-slider">
-					<input
-						type="checkbox"
-						id="themeToggle"
-						checked={theme === "dark"}
-						onChange={toggleTheme}
-					/>
+					<input type="checkbox" id="themeToggle" checked={theme === "dark"} onChange={toggleTheme} />
 					<label htmlFor="themeToggle" className="slider-label">
 						<FaSun className="icon sun" />
 						<FaMoon className="icon moon" />
 						<span className="slider"></span>
 					</label>
 				</div>
-				<AppContent theme={theme} toggleTheme={toggleTheme} />
+				<AppContent theme={theme} toggleTheme={toggleTheme} user={user} />
 			</div>
 		</Router>
 	);

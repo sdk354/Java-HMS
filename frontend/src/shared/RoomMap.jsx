@@ -1,141 +1,168 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import "./RoomMap.css";
+import api from "../api/axios.js";
 
 const RoomMap = ({ userRole }) => {
-	console.log("RoomMap received userRole:", userRole); // DEBUG LINE
+	const [rooms, setRooms] = useState([]);
 	const [selectedRoom, setSelectedRoom] = useState(null);
-	const [currentFloor, setCurrentFloor] = useState("Floor 3");
+	const [currentFloor, setCurrentFloor] = useState("1");
+	const [loading, setLoading] = useState(true);
 
-	// GUESTS and MANAGERS see simplified "Available/Unavailable"
-	// HOUSEKEEPING and ADMIN see granular "Cleaning/Maintenance/Occupied"
+	const floorNames = { "1": "First", "2": "Second", "3": "Third", "4": "Fourth" };
 	const isRestrictedView = userRole === "guest" || userRole === "manager";
-	console.log("Is view restricted?", isRestrictedView); // DEBUG LINE
 
-	const generateRooms = (floorNum) => {
-		const statuses = ["Available", "Occupied", "Cleaning", "Maintenance"];
-		const types = ["Standard Single", "Standard Double", "Deluxe Suite", "Presidential Suite"];
+	useEffect(() => {
+		fetchMapData();
+	}, []);
 
-		return Array.from({ length: 10 }, (_, i) => {
-			const roomNum = floorNum === 0 ? `G${101 + i}` : `${floorNum}${101 + i}`;
-			return {
-				number: roomNum,
-				type: types[i % types.length],
-				status: statuses[i % statuses.length],
-				guest: i % 4 === 1 ? "John Doe" : "-",
-				lastCleaned: "4h ago"
-			};
-		});
+	const fetchMapData = async () => {
+		try {
+			setLoading(true);
+			const response = await api.get("/rooms");
+			setRooms(Array.isArray(response.data) ? response.data : []);
+		} catch (error) {
+			console.error("Error loading rooms:", error);
+		} finally {
+			setLoading(false);
+		}
 	};
 
-	const floors = useMemo(() => ({
-		"Floor 3": generateRooms(3),
-		"Floor 2": generateRooms(2),
-		"Floor 1": generateRooms(1),
-		"Ground Floor": generateRooms(0),
-	}), []);
+	const getFloorFromNumber = (num) => Math.floor(num / 100).toString();
 
-	// CRITICAL: This hides the real status from restricted roles
+	const floorsData = useMemo(() => {
+		const map = { "4": [], "3": [], "2": [], "1": [] };
+		rooms.forEach(room => {
+			const floor = getFloorFromNumber(room.roomNumber);
+			if (map[floor]) map[floor].push(room);
+		});
+		return map;
+	}, [rooms]);
+
 	const getFilteredRoom = (room) => {
+		if (!room) return null;
+
+		// FIX: Force to uppercase to match logic regardless of DB casing ('Available' vs 'AVAILABLE')
+		// Also map 'BOOKED' to 'occupied' for UI purposes
+		const rawStatus = (room.status || "AVAILABLE").toUpperCase();
+
+		const isAvail = rawStatus === "AVAILABLE";
+		const isOccupied = rawStatus === "BOOKED" || rawStatus === "OCCUPIED";
+		const isCleaning = rawStatus === "CLEANING";
+		const isMaint = rawStatus === "MAINTENANCE";
+
 		if (isRestrictedView) {
-			const isAvail = room.status === "Available";
 			return {
 				...room,
 				displayStatus: isAvail ? "Available" : "Unavailable",
-				displayClass: isAvail ? "available" : "occupied", // Merge all non-avail into Red
+				displayClass: isAvail ? "available" : "occupied",
 				isBookable: isAvail
 			};
 		}
+
+		// Detailed View for Admin/Housekeeping
+		let uiClass = "available";
+		if (isOccupied) uiClass = "occupied";
+		if (isCleaning) uiClass = "cleaning";
+		if (isMaint) uiClass = "maintenance";
+
 		return {
 			...room,
-			displayStatus: room.status,
-			displayClass: room.status.toLowerCase(),
-			isBookable: room.status === "Available"
+			displayStatus: room.status, // Keep original casing for display
+			displayClass: uiClass,
+			isBookable: isAvail
 		};
 	};
 
 	const handleRoomClick = (room) => {
 		const filtered = getFilteredRoom(room);
-		setSelectedRoom(filtered === selectedRoom ? null : filtered);
+		setSelectedRoom(selectedRoom?.roomNumber === filtered.roomNumber ? null : filtered);
 	};
+
+	if (loading) return <div className="live-map-loading">Loading Room Map...</div>;
 
 	return (
 		<div className="live-map-container">
 			<div className="map-sidebar">
-				<h1 className="map-title">Live Floor Plan</h1>
-				<div className="floor-selector">
-					{Object.keys(floors).map(f => (
-						<button
-							key={f}
-							className={`floor-btn ${currentFloor === f ? 'active' : ''}`}
-							onClick={() => {setCurrentFloor(f); setSelectedRoom(null);}}
-						>
-							{f}
-						</button>
-					))}
+				<div className="sidebar-top">
+					<h1 className="map-title">Floor Plan</h1>
+					<div className="floor-selector">
+						{Object.keys(floorsData).map(f => (
+							<button
+								key={f}
+								className={`floor-btn ${currentFloor === f ? 'active' : ''}`}
+								onClick={() => { setCurrentFloor(f); setSelectedRoom(null); }}
+							>
+								{floorNames[f]} Floor
+							</button>
+						))}
+					</div>
 				</div>
 
 				{selectedRoom ? (
 					<div className="room-inspector animate-slide-in">
 						<div className="inspector-header">
-							<h3>Room {selectedRoom.number}</h3>
+							<h3>Room {selectedRoom.roomNumber}</h3>
 							<span className={`status-badge ${selectedRoom.displayClass}`}>
-                         {selectedRoom.displayStatus}
-                      </span>
+                                {selectedRoom.displayStatus}
+                            </span>
 						</div>
-						<div className="inspector-row"><span>Type:</span> <span>{selectedRoom.type}</span></div>
-
-						{/* Hide sensitive info from Guests/Managers */}
-						{!isRestrictedView && (
-							<>
-								<div className="inspector-row"><span>Guest:</span> <span>{selectedRoom.guest}</span></div>
-								<div className="inspector-row"><span>Last Clean:</span> <span>{selectedRoom.lastCleaned}</span></div>
-							</>
-						)}
-
+						<div className="inspector-body">
+							<div className="inspector-row"><span>Type:</span> <span>{selectedRoom.roomType?.typeName || 'Standard'}</span></div>
+							<div className="inspector-row"><span>Rate:</span> <span>LKR {selectedRoom.roomType?.basePrice?.toLocaleString() || '0'}</span></div>
+							{!isRestrictedView && (
+								<div className="inspector-row"><span>Floor:</span> <span>{selectedRoom.floorNumber}</span></div>
+							)}
+						</div>
 						<hr className="inspector-divider" />
-
-						{/* Contextual Action Button */}
-						{userRole === "guest" ? (
-							<button className="action-btn" disabled={!selectedRoom.isBookable}>
-								{selectedRoom.isBookable ? "Book Now" : "Currently Unavailable"}
-							</button>
-						) : (
-							<button className="action-btn">Manage Room</button>
-						)}
+						<button className="action-btn" disabled={userRole === "guest" && !selectedRoom.isBookable}>
+							{userRole === "guest" ? (selectedRoom.isBookable ? "Book Room" : "Unavailable") : "Manage Room"}
+						</button>
 					</div>
 				) : (
-					<div className="inspector-placeholder">Select a room to view live details</div>
+					<div className="inspector-placeholder">
+						<p>Select a room from the {floorNames[currentFloor]} floor</p>
+					</div>
 				)}
 			</div>
 
 			<div className="map-viewport">
 				<div className="floor-plan-grid">
-					{[...floors[currentFloor].slice(0, 5), "HALLWAY", ...floors[currentFloor].slice(5, 10)].map((item, idx) => {
-						if (item === "HALLWAY") return <div key="hall" className="hallway">HALLWAY</div>;
+					{(() => {
+						const currentRooms = floorsData[currentFloor] || [];
+						const sortedRooms = [...currentRooms].sort((a, b) => a.roomNumber - b.roomNumber);
+						const row1 = sortedRooms.slice(0, 5);
+						const row2 = sortedRooms.slice(5, 10);
 
-						const fRoom = getFilteredRoom(item);
+						const renderRow = (row) => row.map(room => {
+							const fRoom = getFilteredRoom(room);
+							return (
+								<div
+									key={room.roomNumber}
+									className={`room-block ${fRoom.displayClass} ${selectedRoom?.roomNumber === room.roomNumber ? 'selected' : ''}`}
+									onClick={() => handleRoomClick(room)}
+								>
+									<span className="room-label">{room.roomNumber}</span>
+								</div>
+							);
+						});
+
 						return (
-							<div
-								key={fRoom.number}
-								className={`room-block ${fRoom.displayClass} ${selectedRoom?.number === fRoom.number ? 'selected' : ''}`}
-								onClick={() => handleRoomClick(item)}
-							>
-								<span className="room-label">{fRoom.number}</span>
-							</div>
+							<>
+								<div className="room-row">{renderRow(row1)}</div>
+								<div className="hallway"><span>{floorNames[currentFloor].toUpperCase()} FLOOR CORRIDOR</span></div>
+								<div className="room-row">{renderRow(row2)}</div>
+							</>
 						);
-					})}
+					})()}
 				</div>
 
-				{/* Dynamic Legend based on Role */}
 				<div className="map-legend-bottom">
-					<span className="leg-item"><i className="dot avail"></i> Available</span>
-					{isRestrictedView ? (
-						<span className="leg-item"><i className="dot occu"></i> Unavailable</span>
-					) : (
+					<span className="leg-item"><i className="dot available"></i> Available</span>
+					<span className="leg-item"><i className="dot occupied"></i> Occupied/Booked</span>
+					{!isRestrictedView && (
 						<>
-							<span className="leg-item"><i className="dot occu"></i> Occupied</span>
-							<span className="leg-item"><i className="dot clean"></i> Cleaning</span>
-							<span className="leg-item"><i className="dot maint"></i> Maintenance</span>
+							<span className="leg-item"><i className="dot cleaning"></i> Cleaning</span>
+							<span className="leg-item"><i className="dot maintenance"></i> Maintenance</span>
 						</>
 					)}
 				</div>

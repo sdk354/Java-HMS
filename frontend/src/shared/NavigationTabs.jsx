@@ -7,9 +7,13 @@ const NavigationTabs = ({ userRole }) => {
 	const location = useLocation();
 	const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
 
-	// Standardizing role name for mapping to navigation items
-	const rawRole = userRole?.toLowerCase() || "guest";
-	const activeRole = rawRole === "admin" ? "administration" : rawRole;
+	// 1. Pull the source of truth from localStorage.
+	// This ensures that even if props lag, the UI shows the correct role.
+	const storageRole = localStorage.getItem("role")?.toLowerCase();
+	const activeRole = storageRole || userRole?.toLowerCase() || "guest";
+
+	const userName = localStorage.getItem("userName") || "User";
+	const userInitials = userName.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2);
 
 	const navItems = {
 		manager: [
@@ -31,7 +35,7 @@ const NavigationTabs = ({ userRole }) => {
 			{ path: "/housekeeping/tasks", label: "My Tasks" },
 			{ path: "/housekeeping/map", label: "Room Map" },
 		],
-		administration: [
+		admin: [
 			{ path: "/admin/dashboard", label: "Dashboard" },
 			{ path: "/admin/rooms", label: "Rooms" },
 			{ path: "/admin/map", label: "Room Map" },
@@ -43,8 +47,6 @@ const NavigationTabs = ({ userRole }) => {
 	};
 
 	const currentItems = navItems[activeRole] || [];
-
-	// Increased visible items to 3 for better navigation on medium screens
 	const visibleItems = isMobile ? currentItems.slice(0, 3) : currentItems;
 	const hiddenItems = isMobile ? currentItems.slice(3) : [];
 
@@ -59,10 +61,8 @@ const NavigationTabs = ({ userRole }) => {
 			const items = itemsRef.current;
 			if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
 				if (items.length === 0) return;
-
 				e.preventDefault();
 				const currentIndex = items.findIndex(item => item.path === location.pathname);
-
 				if (currentIndex === -1) return;
 
 				let nextIndex;
@@ -71,7 +71,6 @@ const NavigationTabs = ({ userRole }) => {
 				} else {
 					nextIndex = (currentIndex - 1 + items.length) % items.length;
 				}
-
 				navigate(items[nextIndex].path);
 			}
 		};
@@ -86,9 +85,15 @@ const NavigationTabs = ({ userRole }) => {
 		};
 	}, [location.pathname, navigate]);
 
+	/**
+	 * LOGOUT HANDLER
+	 * Clears all session data and forces a full browser reload to the login page.
+	 * This is the safest way to reset Axios headers and React state.
+	 */
 	const handleLogout = () => {
 		if (window.confirm("Are you sure you want to logout?")) {
-			navigate("/login");
+			localStorage.clear();
+			window.location.assign("/login");
 		}
 	};
 
@@ -98,9 +103,8 @@ const NavigationTabs = ({ userRole }) => {
 				<span className="hotel-logo">GP</span>
 				<div className="brand-text">
 					<span className="hotel-name">Grand Plaza</span>
-					{/* The color here is now driven by the role-specific accent color set in App.jsx */}
 					<span className="role-tag" style={{ color: 'var(--accent-color)' }}>
-                   {activeRole === "administration" ? "ADMIN" : activeRole.toUpperCase()}
+                   {activeRole === "admin" ? "ADMIN" : activeRole.toUpperCase()}
                 </span>
 				</div>
 			</div>
@@ -137,14 +141,13 @@ const NavigationTabs = ({ userRole }) => {
 			<div className="nav-utils">
 				<div className="user-profile-section">
 					<div className="user-info-text">
-						<span className="user-display-name">John Doe</span>
+						<span className="user-display-name">{userName}</span>
 						<button className="logout-inline-btn" onClick={handleLogout}>
 							LOGOUT
 						</button>
 					</div>
 					<div className="avatar-container">
-						{/* Avatar uses the accent color background via CSS variable */}
-						<div className="avatar">JD</div>
+						<div className="avatar">{userInitials}</div>
 					</div>
 				</div>
 			</div>

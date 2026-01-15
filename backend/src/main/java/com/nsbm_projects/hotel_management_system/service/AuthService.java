@@ -8,6 +8,7 @@ import com.nsbm_projects.hotel_management_system.repository.UserRepository;
 import com.nsbm_projects.hotel_management_system.security.JwtService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -40,18 +41,16 @@ public class AuthService {
             throw new IllegalArgumentException("Email already registered");
         }
 
-        // Simplified User Creation matching your SQL schema
         User user = User.builder()
                 .username(request.getUsername())
                 .email(request.getEmail())
                 .fullName(request.getFullName())
                 .passwordHash(passwordEncoder.encode(request.getPassword()))
-                .role("guest") // Default role as a simple string
+                .role("guest")
                 .enabled(true)
                 .build();
 
         userRepository.save(user);
-
         return generateAuthResponse(user);
     }
 
@@ -70,24 +69,41 @@ public class AuthService {
         return generateAuthResponse(user);
     }
 
+    // ================= GET CURRENT USER =================
+    public AuthResponse getCurrentUserInfo() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return generateAuthResponse(user);
+    }
+
+    /**
+     * Internal helper to build the response with JWT and Role mapping.
+     */
     private AuthResponse generateAuthResponse(User user) {
+        // 1. Prepare JWT Claims for the backend filter
         var claims = new HashMap<String, Object>();
+        claims.put("role", user.getRole()); // Value: "housekeeping"
 
-        // We now store the single role string in the JWT claims
-        claims.put("role", user.getRole());
-
+        // 2. Generate token
         String token = jwtService.generateToken(user.getUsername(), claims);
 
-        // Your React routing logic: Map "admin" to "administration"
+        // 3. Format Role for Frontend routing
         String formattedRole = user.getRole().toLowerCase();
-        if (formattedRole.equals("admin")) formattedRole = "administration";
+
+        // Maps 'admin' to 'administration' for React paths,
+        // leaves 'housekeeping' as is.
+        if (formattedRole.equals("admin")) {
+            formattedRole = "administration";
+        }
 
         return AuthResponse.builder()
                 .token(token)
                 .tokenType("Bearer")
                 .role(formattedRole)
                 .fullName(user.getFullName())
-                .userID(user.getUserID()) // Match your new field name userID
+                .userID(user.getUserID()) // Mapped to "id" in JSON
                 .build();
     }
 }

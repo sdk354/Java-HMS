@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.List;
 
 @Entity
-@Table(name = "`User` ") // Backticks required because 'User' is a reserved keyword
+@Table(name = "Users") // Matches 'CREATE TABLE Users'
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 @Builder
@@ -18,8 +18,8 @@ public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "userID") // Matches your SQL PRIMARY KEY
-    private Long id;
+    @Column(name = "userID") // Matches 'userID INT AUTO_INCREMENT'
+    private Integer userID;
 
     @Column(unique = true, nullable = false, length = 100)
     private String username;
@@ -27,25 +27,30 @@ public class User implements UserDetails {
     @Column(unique = true, nullable = false, length = 150)
     private String email;
 
-    @Column(name = "passwordHash", nullable = false, length = 255) // Matches your SQL column
-    private String password;
+    @Column(name = "passwordHash", nullable = false, length = 255) // Matches SQL column
+    private String passwordHash;
 
-    @Column(name = "fullName", length = 150) // Matches your camelCase SQL column
+    @Column(name = "fullName", length = 150) // Matches SQL column
     private String fullName;
 
-    @Column(nullable = false)
-    private String role; // Changed from Set<Role> to String to match your schema
+    @Column(nullable = false, length = 50) // Matches SQL 'role VARCHAR(50)'
+    private String role;
 
-    // 🔹 UserDetails Implementation
+    @Builder.Default
+    @Column(nullable = false)
+    private boolean enabled = true;
+
+    // --- UserDetails Methods ---
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // Converts your single string role (e.g., "admin") into "ROLE_ADMIN"
+        // Direct conversion of String role to Spring Security Authority
         return List.of(new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()));
     }
 
     @Override
     public String getPassword() {
-        return this.password;
+        return this.passwordHash;
     }
 
     @Override
@@ -63,5 +68,7 @@ public class User implements UserDetails {
     public boolean isCredentialsNonExpired() { return true; }
 
     @Override
-    public boolean isEnabled() { return true; }
+    public boolean isEnabled() {
+        return this.enabled;
+    }
 }

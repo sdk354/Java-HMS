@@ -4,35 +4,37 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "orders")
+@Table(name = "ServiceOrder")
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
+@Builder
 public class Order {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "orderID")
+    private Integer orderID;
 
-    // Guest placing the order
+    // Matches 'reservationID' in your SQL
     @ManyToOne(optional = false)
-    @JoinColumn(name = "guest_id", nullable = false)
-    private User guest;
+    @JoinColumn(name = "reservationID", nullable = false)
+    private Booking reservation;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private OrderStatus status = OrderStatus.NEW;
+    @Column(name = "status", length = 50)
+    private String status; // Changed to String to match your SQL VARCHAR(50)
 
-    @Column(nullable = false)
-    private BigDecimal totalAmount = BigDecimal.ZERO;
+    @Column(name = "totalCost", precision = 10, scale = 2)
+    private BigDecimal totalCost; // Renamed to match SQL 'totalCost'
 
-    @Column(nullable = false)
-    private Instant createdAt = Instant.now();
+    @Column(name = "orderDate")
+    private LocalDateTime orderDate; // Matches SQL DATETIME(6)
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<OrderItem> items = new ArrayList<>();
+    // REMOVED: List<OrderItem> items - This table does not exist in your SQL schema.
+
+    public Guest getGuest() {
+        return this.reservation != null ? this.reservation.getGuest() : null;
+    }
 }

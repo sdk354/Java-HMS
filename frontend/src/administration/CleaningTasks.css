@@ -1,29 +1,38 @@
 /* CleaningTasks.css */
 
-/* 1. Grid Layout for Task Cards */
+/* 1. Container & Grid Layout */
+.manager-container {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2.5rem;
+}
+
 .tasks-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-  gap: 2rem;
-  margin-top: 2rem;
+  gap: 1.5rem;
   width: 100%;
 }
 
 /* 2. Unified Glass Card Styling */
 .glass-card.task-card {
   background: var(--card-bg);
-  border: 1px solid rgba(224, 228, 242, 0.5);
+  border: 1px solid var(--border-color);
   border-radius: 24px;
-
-  /* Force padding to prevent content from touching edges as seen in previous builds */
-  padding: 2.5rem !important;
-
+  padding: 1.5rem !important;
   display: flex;
   flex-direction: column;
   min-height: 280px;
   justify-content: space-between;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
   box-sizing: border-box;
 }
 
@@ -32,57 +41,71 @@
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
 }
 
-/* 3. Task Header (Room # and Priority) */
+/* 3. Task Header */
 .task-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 1.5rem;
+  align-items: center;
+  margin-bottom: 1.2rem;
 }
 
 .room-label {
-  font-size: 1.8rem;
+  font-size: 1.6rem;
   font-weight: 800;
   color: var(--text-color);
+  margin: 0;
 }
 
-/* Priority Tags */
-.priority-tag {
-  font-size: 0.7rem;
-  font-weight: 800;
-  padding: 5px 12px;
+.date-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: var(--bg-secondary);
+  padding: 4px 12px;
   border-radius: 50px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
 }
-
-.priority-tag.high { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
-.priority-tag.medium { background: rgba(242, 140, 56, 0.1); color: #f28c38; }
-.priority-tag.low { background: rgba(16, 185, 129, 0.1); color: #10b981; }
 
 /* 4. Task Body Details */
-.task-details {
-  margin-bottom: 2rem;
+.task-body {
+  background: var(--bg-secondary);
+  padding: 1.2rem;
+  border-radius: 16px;
+  margin-bottom: 1rem;
 }
 
 .detail-row {
   display: flex;
-  flex-direction: column;
-  margin-bottom: 1rem;
+  justify-content: space-between;
+  align-items: flex-start; /* Better for multi-line notes */
+  margin-bottom: 0.8rem;
+}
+
+.detail-row:last-child {
+  margin-bottom: 0;
 }
 
 .detail-label {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   text-transform: uppercase;
-  color: var(--text-color);
-  opacity: 0.5;
-  margin-bottom: 4px;
+  font-weight: 800;
+  color: var(--text-secondary);
+  letter-spacing: 0.5px;
 }
 
 .detail-value {
-  font-size: 1.1rem;
+  font-size: 0.95rem;
   font-weight: 600;
   color: var(--text-color);
+  max-width: 60%;
+  text-align: right;
+}
+
+.detail-value.notes {
+  font-style: italic;
+  font-weight: 500;
+  color: var(--text-secondary);
+  line-height: 1.4;
 }
 
 /* 5. Footer and Status */
@@ -90,27 +113,137 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-top: 1.5rem;
-  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+  gap: 1rem;
 }
 
 .task-status-text {
-  font-size: 0.9rem;
-  font-weight: 700;
-  color: var(--accent-color); /* Uses Administration Red */
+  font-size: 0.85rem;
+  font-weight: 800;
+  text-transform: uppercase;
 }
 
+/* Status variants */
+.pending { color: #f59e0b; }
+.in-progress { color: #3b82f6; }
+.completed { color: #10b981; }
+
 .admin-action-btn {
-  background-color: var(--accent-color) !important;
+  background: var(--accent-color);
   color: white;
   border: none;
-  padding: 0.7rem 1.2rem;
+  padding: 10px 20px;
   border-radius: 12px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  transition: opacity 0.2s;
+  transition: all 0.2s;
 }
 
 .admin-action-btn:hover {
   opacity: 0.9;
+  transform: scale(1.02);
+}
+
+.completed-stamp {
+  font-weight: 800;
+  color: #10b981;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* 6. Form & Textarea Styling */
+.admin-textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+  color: var(--text-color);
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 500;
+  resize: none; /* Keeps the card clean */
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.admin-textarea:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.1);
+}
+
+.admin-textarea::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.5;
+}
+
+/* 7. Modal Styles */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(6px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  width: 90%;
+  max-width: 480px;
+  padding: 2.5rem;
+  border-radius: 28px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+}
+
+.modal-title {
+  margin-bottom: 1.8rem;
+  font-size: 1.6rem;
+  font-weight: 800;
+}
+
+.form-group {
+  margin-bottom: 1.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.form-group label {
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.form-group input {
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+  color: var(--text-color);
+  font-weight: 600;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1.5rem;
+  align-items: center;
+  margin-top: 2rem;
+}
+
+.cancel-link {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 0.9rem;
 }

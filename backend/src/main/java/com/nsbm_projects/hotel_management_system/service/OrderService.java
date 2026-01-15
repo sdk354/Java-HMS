@@ -2,125 +2,88 @@ package com.nsbm_projects.hotel_management_system.service;
 
 import com.nsbm_projects.hotel_management_system.dto.*;
 import com.nsbm_projects.hotel_management_system.model.*;
-import com.nsbm_projects.hotel_management_system.repository.MenuItemRepository;
-import com.nsbm_projects.hotel_management_system.repository.OrderRepository;
-import com.nsbm_projects.hotel_management_system.repository.UserRepository;
+import com.nsbm_projects.hotel_management_system.repository.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
 
     private final OrderRepository orderRepository;
-    private final MenuItemRepository menuItemRepository;
+    private final ServiceItemRepository serviceItemRepository; // Renamed
     private final UserRepository userRepository;
+    private final BookingRepository bookingRepository;
 
     public OrderService(OrderRepository orderRepository,
-                        MenuItemRepository menuItemRepository,
-                        UserRepository userRepository) {
+                        ServiceItemRepository serviceItemRepository,
+                        UserRepository userRepository,
+                        BookingRepository bookingRepository) {
         this.orderRepository = orderRepository;
-        this.menuItemRepository = menuItemRepository;
+        this.serviceItemRepository = serviceItemRepository;
         this.userRepository = userRepository;
+        this.bookingRepository = bookingRepository;
     }
 
     @Transactional
     public OrderResponse placeOrder(PlaceOrderRequest request) {
-        if (request.getItems() == null || request.getItems().isEmpty()) {
-            throw new IllegalArgumentException("Order must contain at least 1 item");
-        }
+        // 1. Find the User
+        User user = userRepository.findById(request.getGuestId())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        User guest = userRepository.findById(request.getGuestId())
-                .orElseThrow(() -> new IllegalArgumentException("Guest not found"));
+        // 2. Find the active Booking (Reservation)
+        Booking booking = bookingRepository.findTopByGuest_User_UserIDOrderByCheckInDateDesc(user.getUserID())
+                .orElseThrow(() -> new IllegalStateException("No active reservation found for this guest"));
 
-        Order order = new Order();
-        order.setGuest(guest);
-        order.setStatus(OrderStatus.NEW);
-        order.setTotalAmount(BigDecimal.ZERO);
-
-        List<OrderItemResponse> responseItems = new ArrayList<>();
-        BigDecimal total = BigDecimal.ZERO;
-
-        for (OrderItemRequest itemReq : request.getItems()) {
-            if (itemReq.getQuantity() <= 0) {
-                throw new IllegalArgumentException("Quantity must be > 0");
-            }
-
-            MenuItem menuItem = menuItemRepository.findById(itemReq.getMenuItemId())
-                    .orElseThrow(() -> new IllegalArgumentException("Menu item not found: " + itemReq.getMenuItemId()));
-
-            if (!menuItem.isAvailable()) {
-                throw new IllegalStateException("Menu item unavailable: " + menuItem.getName());
-            }
-
-            BigDecimal unitPrice = menuItem.getPrice();
-            BigDecimal lineTotal = unitPrice.multiply(BigDecimal.valueOf(itemReq.getQuantity()));
-            total = total.add(lineTotal);
-
-            OrderItem oi = new OrderItem();
-            oi.setOrder(order);
-            oi.setMenuItem(menuItem);
-            oi.setQuantity(itemReq.getQuantity());
-            oi.setUnitPrice(unitPrice);
-            oi.setLineTotal(lineTotal);
-
-            order.getItems().add(oi);
-
-            responseItems.add(new OrderItemResponse(
-                    menuItem.getId(),
-                    menuItem.getName(),
-                    itemReq.getQuantity(),
-                    unitPrice,
-                    lineTotal
-            ));
-        }
-
-        order.setTotalAmount(total);
+        // 3. Create the Order matching the ServiceOrder table (No Items table)
+        Order order = Order.builder()
+                .reservation(booking)
+                .status("PENDING")
+                .totalCost(request.getTotalCost()) // Using totalCost from DTO
+                .orderDate(LocalDateTime.now())
+                .build();
 
         Order saved = orderRepository.save(order);
 
+        // 4. Map to Response (Simplified: no nested OrderItemResponse list)
         return new OrderResponse(
-                saved.getId(),
-                guest.getId(),
+                saved.getOrderID(),
+                user.getUserID(),
                 saved.getStatus(),
-                saved.getTotalAmount(),
-                saved.getCreatedAt(),
-                responseItems
+                saved.getTotalCost(),
+                saved.getOrderDate(),
+                List.of() // Empty list since schema has no items table
         );
     }
-    @Transactional(readOnly = true)
-    public List<OrderResponse> getOrdersByStatus(OrderStatus status) {
 
+    @Transactional(readOnly = true)
+    public List<OrderResponse> getOrdersByStatus(String status) {
         return orderRepository.findByStatus(status)
                 .stream()
-                .map(order -> new OrderResponse(
-                        order.getId(),
-                        order.getGuest().getId(),
-                        order.getStatus(),
-                        order.getTotalAmount(),
-                        order.getCreatedAt(),
-                        order.getItems().stream()
-                                .map(i -> new OrderItemResponse(
-                                        i.getMenuItem().getId(),
-                                        i.getMenuItem().getName(),
-                                        i.getQuantity(),
-                                        i.getUnitPrice(),
-                                        i.getLineTotal()
-                                ))
-                                .toList()
-                ))
-                .toList();
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
     }
-    @Transactional
-    public void updateOrderStatus(Long orderId, OrderStatus newStatus) {
 
+    @Transactional
+    public void updateOrderStatus(Integer orderId, String newStatus) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
 
         order.setStatus(newStatus);
         orderRepository.save(order);
+    }
+
+    private OrderResponse mapToResponse(Order order) {
+        return new OrderResponse(
+                order.getOrderID(),
+                order.getGuest() != null ? order.getGuest().getUser().getUserID() : null,
+                order.getStatus(),
+                order.getTotalCost(),
+                order.getOrderDate(),
+                List.of()
+        );
     }
 }

@@ -1,28 +1,97 @@
 /* AdminReservations.css */
+.manager-container {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.manager-header {
+  margin-bottom: 2rem;
+}
 
 .header-with-actions {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
+  gap: 2rem;
   width: 100%;
 }
 
+.manager-title {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--text-color);
+  margin: 0;
+}
+
+.manager-welcome {
+  color: var(--text-secondary);
+  margin-top: 0.5rem;
+}
+
+/* Search and Controls */
+.header-controls {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.admin-search-input {
+  padding: 12px 20px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  background: var(--card-bg);
+  color: var(--text-color);
+  width: 300px;
+  font-size: 0.95rem;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.admin-search-input:focus {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
+}
+
+.admin-action-btn {
+  background: var(--accent-color);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s ease, opacity 0.2s;
+}
+
+.admin-action-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
+/* Reservations Grid */
 .reservations-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-  gap: 2rem;
+  gap: 1.5rem;
   margin-top: 2rem;
 }
 
+/* Card Styling */
 .glass-card.res-card {
-  padding: 2.5rem !important; /* Matches your successful card fix */
+  padding: 1.5rem !important;
   background: var(--card-bg);
-  border-radius: 24px;
-  border: 1px solid rgba(224, 228, 242, 0.5);
+  border-radius: 20px;
+  border: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  gap: 1.2rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.res-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
 }
 
 .res-card-header {
@@ -33,84 +102,228 @@
 
 .res-id {
   font-weight: 800;
-  font-size: 0.8rem;
-  color: var(--accent-color); /* Admin Red */
-  letter-spacing: 1px;
+  font-size: 0.9rem;
+  color: var(--accent-color);
+  letter-spacing: 0.5px;
 }
 
+/* Status Pill Styling */
 .res-status-pill {
-  padding: 6px 12px;
+  padding: 6px 14px;
   border-radius: 50px;
-  font-size: 0.75rem;
-  font-weight: 700;
+  font-size: 0.7rem;
+  font-weight: 800;
   text-transform: uppercase;
 }
 
-.res-status-pill.confirmed { background: rgba(16, 185, 129, 0.1); color: #10b981; }
-.res-status-pill.pending { background: rgba(242, 140, 56, 0.1); color: #f28c38; }
+.res-status-pill.confirmed { background: #e8f5e9; color: #2e7d32; }
+.res-status-pill.checked-in { background: #e3f2fd; color: #1565c0; }
+.res-status-pill.checked-out { background: #f5f5f5; color: #616161; }
+.res-status-pill.cancelled { background: #fee2e2; color: #b91c1c; }
 
+/* Guest & Room Info */
 .guest-name {
-  font-size: 1.8rem;
+  font-size: 1.4rem;
   font-weight: 800;
   margin: 0;
+  color: var(--text-color);
 }
 
 .res-room-detail {
-  opacity: 0.6;
-  margin-top: 4px;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  margin: 4px 0 0 0;
 }
 
+/* Dates Grid */
 .res-dates-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  padding: 1.5rem 0;
-  border-top: 1px solid rgba(0, 0, 0, 0.05);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  background: var(--bg-secondary);
+  padding: 1rem;
+  border-radius: 12px;
+  gap: 1rem;
+}
+
+.date-item {
+  display: flex;
+  flex-direction: column;
 }
 
 .date-label {
-  display: block;
   font-size: 0.7rem;
   text-transform: uppercase;
-  opacity: 0.5;
-  margin-bottom: 4px;
+  color: var(--text-secondary);
+  font-weight: 700;
+  margin-bottom: 2px;
 }
 
 .date-value {
   font-weight: 700;
-  font-size: 1.1rem;
+  font-size: 0.95rem;
+  color: var(--text-color);
 }
 
+/* Footer & Actions */
 .res-footer {
   display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin-top: auto;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.res-total {
+  display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-end;
+  width: 100%;
 }
 
 .total-label {
-  display: block;
-  font-size: 0.7rem;
-  opacity: 0.5;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
 }
 
-/* Force specific font size to prevent global override */
 .total-price {
-  font-size: 1.6rem !important;
   font-weight: 800;
+  font-size: 1.4rem !important;
+  color: var(--accent-color);
 }
 
 .res-actions {
   display: flex;
-  gap: 10px;
+  align-items: center;
+  gap: 0.8rem;
+  width: 100%;
 }
 
 .res-btn {
-  padding: 8px 16px;
+  padding: 10px 18px;
   border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+}
+
+.res-btn.checkin,
+.res-btn.checkout {
+  background: var(--accent-color);
+  color: white;
+  flex: 1;
+}
+
+.res-btn.checkin:hover,
+.res-btn.checkout:hover {
+  opacity: 0.9;
+}
+
+.res-btn.edit {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  margin-left: auto; /* Push to right if alone */
+}
+
+.res-btn.edit:hover {
+  background: var(--bg-secondary);
+  color: var(--text-color);
+}
+
+/* --- MODAL STYLES (MATCHES ROOMS) --- */
+.modal-overlay {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background: rgba(0, 0, 0, 0.6) !important;
+  backdrop-filter: blur(8px);
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  z-index: 99999 !important;
+}
+
+.modal-content {
+  background: var(--card-bg);
+  color: var(--text-color);
+  padding: 2.5rem;
+  border-radius: 24px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border-color);
+}
+
+.form-group {
+  margin-bottom: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.form-group input,
+.form-group select {
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+  color: var(--text-color);
   font-weight: 600;
+  outline: none;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.cancel-link {
+  background: none;
   border: none;
+  color: var(--text-secondary);
+  font-weight: 700;
   cursor: pointer;
 }
 
-.res-btn.edit { background: #f0f2f5; color: #1e293b; }
-.res-btn.cancel { background: #fff1f1; color: #ef4444; }
+.no-data-msg {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 4rem;
+  color: var(--text-secondary);
+  background: var(--card-bg);
+  border-radius: 20px;
+  border: 1px dashed var(--border-color);
+}
+
+@media (max-width: 768px) {
+  .header-with-actions { flex-direction: column; align-items: flex-start; }
+  .admin-search-input { width: 100%; }
+  .res-actions { flex-wrap: wrap; }
+  .res-btn.edit { width: 100%; }
+}

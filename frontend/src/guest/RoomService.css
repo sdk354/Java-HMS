@@ -1,12 +1,22 @@
 .service-container {
   padding: 2rem;
-  max-width: 1100px;
+  max-width: 1200px;
   margin: 0 auto;
+  min-height: 90vh;
 }
 
+/* 1. The main layout: Left Menu, Right Cart */
+.service-layout {
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  gap: 2.5rem;
+  align-items: start;
+}
+
+/* 2. Menu Grid */
 .service-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1.5rem;
 }
 
@@ -14,37 +24,155 @@
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-bottom: 3px solid transparent;
+}
+
+.service-item:hover:not(.disabled) {
+  transform: translateY(-5px);
+  border-bottom-color: var(--accent-color);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .service-cat {
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   color: var(--accent-color);
   font-weight: 800;
   text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.service-name {
+  font-size: 1.25rem;
+  margin: 0;
+  color: var(--text-color);
 }
 
 .service-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: auto;
+  margin-top: 1.5rem;
 }
 
 .service-price {
   font-weight: 700;
+  font-size: 1.1rem;
+  /* Use variable to adapt to light/dark mode automatically */
+  color: var(--text-color);
 }
 
 .add-btn {
   background: var(--accent-color);
   color: white;
   border: none;
-  padding: 6px 15px;
+  padding: 8px 20px;
   border-radius: 8px;
   cursor: pointer;
+  font-weight: 600;
+  transition: opacity 0.2s;
 }
 
-.service-item.disabled {
-  opacity: 0.5;
-  filter: grayscale(1);
+.add-btn:hover:not(:disabled) {
+  opacity: 0.8;
+}
+
+/* 3. Sidebar Cart Styling */
+.cart-sidebar {
+  position: sticky;
+  top: 100px;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  border-top: 5px solid var(--accent-color);
+}
+
+/* FIX: Specific override for the Place Order button to prevent Red in Light Mode */
+.cart-sidebar .button-accent {
+  background-color: var(--accent-color) !important;
+  color: white !important;
+  border: none;
+  padding: 12px;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cart-sidebar .button-accent:hover {
+  /* This prevents the global 'red' hover color */
+  filter: brightness(1.1);
+  transform: translateY(-2px);
+  background-color: var(--accent-color) !important;
+  color: white !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.cart-items {
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 5px;
+}
+
+.cart-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1); /* Darker line for light mode */
+  font-size: 0.95rem;
+}
+
+/* Remove 'X' button styling */
+.remove-btn {
+  background: none;
+  border: none;
+  color: #ff4d4d;
+  font-weight: bold;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0 5px;
+  transition: transform 0.2s;
+}
+
+.remove-btn:hover {
+  transform: scale(1.2);
+}
+
+.cart-item-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.cart-qty {
+  font-size: 0.75rem;
+  color: var(--accent-color);
+  font-weight: 700;
+}
+
+.cart-total {
+  margin-top: 1rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cart-total strong {
+  font-size: 1.4rem;
+  color: var(--accent-color);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 950px) {
+  .service-layout {
+    grid-template-columns: 1fr;
+  }
+  .cart-sidebar {
+    position: static;
+    margin-top: 2rem;
+  }
 }

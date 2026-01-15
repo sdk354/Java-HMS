@@ -14,12 +14,13 @@
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  overflow-y: auto;
 }
 
 .map-title {
   font-size: 1.5rem;
   font-weight: 800;
-  margin: 0;
+  margin-bottom: 1.5rem;
 }
 
 .floor-selector {
@@ -32,7 +33,7 @@
   padding: 12px;
   border-radius: 8px;
   border: 1px solid var(--border-color);
-  background: transparent;
+  background: var(--bg-primary);
   color: var(--text-color);
   cursor: pointer;
   font-weight: 600;
@@ -44,158 +45,7 @@
   background: var(--accent-color);
   color: white;
   border-color: var(--accent-color);
-}
-
-/* Floor Plan Canvas */
-.floor-plan-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 110px);
-  grid-template-rows: 140px 50px 140px;
-  gap: 15px;
-  background: var(--bg-secondary);
-  padding: 30px;
-  border-radius: 20px;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.2);
-  border: 1px solid var(--border-color);
-}
-
-.hallway {
-  grid-column: 1 / -1;
-  grid-row: 2;
-  background: var(--bg-primary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 800;
-  letter-spacing: 4px;
-  color: var(--text-secondary);
-  opacity: 0.5;
-  border-radius: 4px;
-  border: 1px dashed var(--border-color);
-  font-size: 0.8rem;
-}
-
-/* Room Blocks: High Contrast Update */
-.room-block {
-  /* Darker base for better contrast */
-  background: rgba(128, 128, 128, 0.2);
-  border-radius: 12px;
-  color: var(--text-color);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.25s ease;
-  position: relative;
-  /* Thicker border for visibility */
-  border: 3px solid var(--border-color);
-}
-
-/* Stronger Surround Borders and deeper status tints */
-.room-block.available {
-  border-color: #1b5e20; /* Deep Forest Green */
-  background: rgba(27, 94, 32, 0.15);
-}
-
-.room-block.occupied {
-  border-color: #b71c1c; /* Deep Crimson Red */
-  background: rgba(183, 28, 28, 0.15);
-}
-
-.room-block.cleaning {
-  border-color: #e65100; /* Deep Burnt Orange */
-  background: rgba(230, 81, 0, 0.15);
-}
-
-.room-block.maintenance {
-  border-color: #4527a0; /* Deep Royal Purple */
-  background: rgba(69, 39, 160, 0.15);
-}
-
-/* Selection State Glow */
-.room-block.selected {
-  transform: scale(1.05);
-  z-index: 10;
-}
-
-/* Updated Selection Glows to match the new darker palette */
-.room-block.selected.available { box-shadow: 0 0 25px rgba(27, 94, 32, 0.5); }
-.room-block.selected.occupied { box-shadow: 0 0 25px rgba(183, 28, 28, 0.5); }
-.room-block.selected.cleaning { box-shadow: 0 0 25px rgba(230, 81, 0, 0.5); }
-.room-block.selected.maintenance { box-shadow: 0 0 25px rgba(69, 39, 160, 0.5); }
-
-.room-label {
-  font-weight: 900;
-  font-size: 1.2rem;
-  letter-spacing: -0.5px;
-}
-
-/* Room Inspector: Lighter Card Style Update */
-.room-inspector {
-  /* Forced light background for card look */
-  background: #ffffff;
-  padding: 1.5rem;
-  border-radius: 12px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-left: 6px solid var(--accent-color);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-  color: #1a1a1a; /* Dark text for the light card */
-}
-
-/* Dark Mode adaptation for the card */
-[data-theme='dark'] .room-inspector {
-  background: var(--card-bg);
-  border-color: rgba(255, 255, 255, 0.1);
-  color: #ffffff;
-}
-
-.inspector-row {
-  display: flex;
-  justify-content: space-between;
-  margin: 12px 0;
-  font-size: 0.9rem;
-}
-
-.inspector-row span:first-child {
-  color: #666; /* Gray text for labels on light card */
-}
-
-[data-theme='dark'] .inspector-row span:first-child {
-  color: #aaa;
-}
-
-.inspector-divider {
-  border: 0;
-  border-top: 1px solid rgba(0,0,0,0.1);
-  margin: 15px 0;
-}
-
-[data-theme='dark'] .inspector-divider {
-  border-top-color: rgba(255,255,255,0.1);
-}
-
-.action-btn {
-  width: 100%;
-  padding: 12px;
-  background: var(--accent-color);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: opacity 0.2s;
-}
-
-.action-btn:hover {
-  opacity: 0.9;
-}
-
-.inspector-placeholder {
-  color: var(--text-secondary);
-  font-style: italic;
-  text-align: center;
-  margin-top: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 /* Map Viewport & Legend */
@@ -205,35 +55,152 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  background-image: radial-gradient(var(--border-color) 1px, transparent 1px);
+  background-size: 30px 30px; /* Blueprint grid effect */
 }
 
-.map-legend-bottom {
-  margin-top: 2rem;
+/* Floor Plan Grid Layout */
+.floor-plan-grid {
   display: flex;
-  gap: 24px;
-  padding: 12px 24px;
+  flex-direction: column;
+  gap: 20px;
+  background: var(--bg-secondary);
+  padding: 40px;
+  border-radius: 24px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+  border: 1px solid var(--border-color);
+  min-width: 650px;
+}
+
+.room-row {
+  display: grid;
+  grid-template-columns: repeat(5, 110px);
+  gap: 15px;
+  justify-content: center;
+}
+
+.hallway {
+  width: 100%;
+  height: 60px;
+  background: var(--bg-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  letter-spacing: 6px;
+  color: var(--text-secondary);
+  opacity: 0.6;
+  border-radius: 8px;
+  border: 2px dashed var(--border-color);
+  font-size: 0.75rem;
+  margin: 10px 0;
+}
+
+/* Room Blocks */
+.room-block {
+  height: 120px;
+  background: rgba(128, 128, 128, 0.05);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 3px solid var(--border-color);
+  position: relative;
+}
+
+/* Status Variants - High Contrast */
+.room-block.available { border-color: #2e7d32; background: rgba(46, 125, 50, 0.1); }
+.room-block.occupied { border-color: #d32f2f; background: rgba(211, 47, 47, 0.1); }
+.room-block.cleaning { border-color: #ef6c00; background: rgba(239, 108, 0, 0.1); }
+.room-block.maintenance { border-color: #6a1b9a; background: rgba(106, 27, 154, 0.1); }
+
+.room-block:hover {
+  transform: translateY(-5px);
+  filter: brightness(1.2);
+}
+
+.room-block.selected {
+  transform: scale(1.08);
+  z-index: 10;
+  background: white;
+}
+
+[data-theme='dark'] .room-block.selected { background: var(--bg-primary); }
+
+/* Selection Glows */
+.room-block.selected.available { box-shadow: 0 0 30px rgba(46, 125, 50, 0.4); }
+.room-block.selected.occupied { box-shadow: 0 0 30px rgba(211, 47, 47, 0.4); }
+.room-block.selected.cleaning { box-shadow: 0 0 30px rgba(239, 108, 0, 0.4); }
+.room-block.selected.maintenance { box-shadow: 0 0 30px rgba(106, 27, 154, 0.4); }
+
+.room-label {
+  font-weight: 900;
+  font-size: 1.3rem;
+  color: inherit;
+}
+
+/* Room Inspector */
+.room-inspector {
+  background: #ffffff;
+  padding: 1.5rem;
+  border-radius: 16px;
+  border-left: 6px solid var(--accent-color);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+  color: #1a1a1a;
+}
+
+[data-theme='dark'] .room-inspector {
+  background: var(--bg-primary);
+  color: #ffffff;
+  border: 1px solid var(--border-color);
+  border-left-width: 6px;
+}
+
+.status-badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.status-badge.available { background: #e8f5e9; color: #2e7d32; }
+.status-badge.occupied { background: #ffebee; color: #c62828; }
+
+/* Legend */
+.map-legend-bottom {
+  margin-top: 3rem;
+  display: flex;
+  gap: 30px;
+  padding: 16px 32px;
   background: var(--bg-secondary);
   border-radius: 50px;
   border: 1px solid var(--border-color);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
 .leg-item {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 0.8rem;
-  font-weight: 600;
+  gap: 10px;
+  font-size: 0.85rem;
+  font-weight: 700;
   color: var(--text-secondary);
 }
 
-.dot { width: 10px; height: 10px; border-radius: 50%; }
-.dot.avail { background: #1b5e20; }  /* Deep Forest Green */
-.dot.occu { background: #b71c1c; }   /* Deep Crimson Red */
-.dot.clean { background: #e65100; }  /* Deep Burnt Orange */
-.dot.maint { background: #4527a0; }  /* Deep Royal Purple */
+.dot { width: 12px; height: 12px; border-radius: 50%; }
+.dot.available { background: #2e7d32; }
+.dot.occupied { background: #d32f2f; }
+.dot.cleaning { background: #ef6c00; }
+.dot.maintenance { background: #6a1b9a; }
 
-@keyframes slideIn {
-  from { opacity: 0; transform: translateX(-15px); }
-  to { opacity: 1; transform: translateX(0); }
+.live-map-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-size: 1.2rem;
+  font-weight: 600;
 }
-.animate-slide-in { animation: slideIn 0.3s ease-out; }

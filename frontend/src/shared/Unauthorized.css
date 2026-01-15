@@ -1,0 +1,66 @@
+.unauthorized-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 80vh;
+  padding: 2rem;
+  text-align: center;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.unauthorized-content {
+  max-width: 500px;
+  background: var(--bg-card, #ffffff);
+  padding: 3rem;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  border-top: 5px solid var(--accent-color);
+}
+
+.error-code {
+  font-size: 6rem;
+  font-weight: 800;
+  margin: 0;
+  color: var(--accent-color);
+  line-height: 1;
+  opacity: 0.2;
+}
+
+.error-title {
+  font-size: 2rem;
+  margin: 1rem 0;
+  color: var(--text-primary, #333);
+}
+
+.error-message {
+  font-size: 1.1rem;
+  color: var(--text-secondary, #666);
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Dark Mode Overrides (if applicable) */
+[data-theme="dark"] .unauthorized-content {
+  background: #2a2d3e;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .error-title {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .error-message {
+  color: #b0b3c1;
+}

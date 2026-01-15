@@ -9,11 +9,13 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.stream.Collectors;
+import java.util.Collections;
+import java.util.List;
 
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
@@ -26,43 +28,51 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) {
-        String path = request.getRequestURI();
-        // Skip filtering for authentication endpoints
-        return path.startsWith("/api/auth/");
-    }
-
-    @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain chain)
             throws ServletException, IOException {
 
-        String header = request.getHeader(HttpHeaders.AUTHORIZATION);
+        // 1. If this is a CORS preflight request, skip the filter
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            chain.doFilter(request, response);
+            return;
+        }
+
+        final String header = request.getHeader(HttpHeaders.AUTHORIZATION);
 
         if (StringUtils.hasText(header) && header.startsWith("Bearer ")) {
-            String token = header.substring(7);
+            final String token = header.substring(7);
             try {
-                String username = jwtService.extractUsername(token);
+                final String username = jwtService.extractUsername(token);
+                final String roleFromToken = jwtService.extractClaim(token, claims -> claims.get("role", String.class));
 
-                if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                    userRepository.findByUsername(username).ifPresent(user -> {
-                        if (jwtService.isTokenValid(token, username)) {
-                            var authorities = user.getRoles().stream()
-                                    .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName()))
-                                    .collect(Collectors.toList());
+                if (username != null && roleFromToken != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                    if (jwtService.isTokenValid(token, username)) {
 
-                            var auth = new UsernamePasswordAuthenticationToken(username, null, authorities);
-                            SecurityContextHolder.getContext().setAuthentication(auth);
-                        }
-                    });
+                        String formattedRole = "ROLE_" + roleFromToken.toUpperCase();
+
+                        List<SimpleGrantedAuthority> authorities = Collections.singletonList(
+                                new SimpleGrantedAuthority(formattedRole)
+                        );
+
+                        UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
+                                username,
+                                null,
+                                authorities
+                        );
+
+                        auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                        SecurityContextHolder.getContext().setAuthentication(auth);
+
+                        // Keep this log: it helps us confirm the JWT is read correctly
+                        System.out.println("Authenticated: " + username + " [" + formattedRole + "]");
+                    }
                 }
             } catch (Exception e) {
-                // If token extraction fails, clear context to ensure 401 on protected routes
                 SecurityContextHolder.clearContext();
             }
         }
-
         chain.doFilter(request, response);
     }
 }

@@ -3,33 +3,33 @@ package com.nsbm_projects.hotel_management_system.model;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.math.BigDecimal;
-
 @Entity
-@Table(name = "rooms")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@Table(name = "Room")
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor
+@Builder // Added builder for test support
 public class Room {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "roomNumber")
+    private Integer roomNumber;
 
-    @Column(nullable = false, unique = true)
-    private String roomNumber;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "roomTypeID", nullable = false)
+    private RoomType roomType;
 
-    @Column(nullable = false)
-    private String type;
-
-    @Column(nullable = false)
-    private BigDecimal pricePerNight;
-
-    @Column(nullable = false)
-    private boolean available = true;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    // REMOVED: @Enumerated(EnumType.STRING)
+    @Convert(converter = RoomStatusConverter.class) // Uses our custom mapping logic
+    @Column(name = "status", nullable = false, length = 50)
     private RoomStatus status = RoomStatus.AVAILABLE;
+
+    @Column(name = "floorNumber")
+    private Integer floorNumber;
+
+    @Column(name = "mapCoordinates", length = 100)
+    private String mapCoordinates;
+
+    public boolean isAvailable() {
+        return RoomStatus.AVAILABLE.equals(this.status);
+    }
 }

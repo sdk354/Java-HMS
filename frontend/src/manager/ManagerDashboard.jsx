@@ -1,38 +1,64 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import api from "../api/axios.js";
 import "./ManagerDashboard.css";
 
 const ManagerDashboard = () => {
-	// These would typically come from an API call to your SQL tables
-	const stats = [
+	const [stats, setStats] = useState(null);
+	const [loading, setLoading] = useState(true);
+
+	useEffect(() => {
+		const fetchDashboardData = async () => {
+			try {
+				setLoading(true);
+				const response = await api.get("/admin/stats/summary");
+				setStats(response.data);
+			} catch (error) {
+				console.error("Error fetching dashboard stats:", error);
+			} finally {
+				setLoading(false);
+			}
+		};
+		fetchDashboardData();
+	}, []);
+
+	// Helper to safely format currency
+	const formatCurrency = (val) => {
+		if (val === undefined || val === null) return "0.00";
+		return val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+	};
+
+	const financialCards = [
 		{
 			label: "Total Revenue",
-			value: "$44,550.00",
+			value: stats?.totalRevenue,
 			sub: "From Bill (grandTotal)",
 			emoji: "📊",
 			trend: "+12.5%"
 		},
 		{
 			label: "Room Charges",
-			value: "$34,000.00",
+			value: stats?.roomCharges,
 			sub: "From Bill (roomCharges)",
 			emoji: "🏨",
 			trend: "+8.2%"
 		},
 		{
 			label: "Service Revenue",
-			value: "$6,500.00",
+			value: stats?.serviceRevenue,
 			sub: "From ServiceOrder (totalCost)",
 			emoji: "🍽️",
 			trend: "+14.1%"
 		},
 		{
 			label: "Tax Collected",
-			value: "$4,050.00",
+			value: stats?.taxAmount, // Fixed: matched to backend key 'taxAmount'
 			sub: "From Bill (taxAmount)",
 			emoji: "📜",
 			trend: "+10.0%"
 		}
 	];
+
+	if (loading) return <div className="manager-container">Loading Financial Data...</div>;
 
 	return (
 		<div className="manager-container page-fade-in">
@@ -42,17 +68,27 @@ const ManagerDashboard = () => {
 			</header>
 
 			<div className="stats-grid">
-				{stats.map((stat, index) => (
+				{financialCards.map((card, index) => (
 					<div key={index} className="glass-card stat-card">
-						<div className="stat-emoji">{stat.emoji}</div>
-						<h3>{stat.label}</h3>
-						<p className="stat-value">{stat.value}</p>
+						<div className="stat-emoji">{card.emoji}</div>
+						<h3>{card.label}</h3>
+						<p className="stat-value">
+							LKR {formatCurrency(card.value)}
+						</p>
 						<div className="stat-footer">
-							<span className="stat-subtext">{stat.sub}</span>
-							<span className="stat-trend"> {stat.trend}</span>
+							<span className="stat-subtext">{card.sub}</span>
+							<span className="stat-trend">{card.trend}</span>
 						</div>
 					</div>
 				))}
+			</div>
+
+			<div className="operational-stats-row" style={{marginTop: '30px', color: 'white', opacity: 0.8}}>
+				<p>
+					Operational Status: <strong>{stats?.occupancyRate || "0%"} Occupancy</strong> |
+					<strong> {stats?.activeStaff || 0} Active Staff</strong> |
+					<strong> {stats?.pendingTasks || 0} Pending Tasks</strong>
+				</p>
 			</div>
 		</div>
 	);

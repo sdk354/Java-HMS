@@ -7,35 +7,38 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "bookings")
+@Table(name = "Reservation")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Booking {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "reservationID")
+    private Integer reservationID;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "guest_id")
-    private User guest;
+    @JoinColumn(name = "guestID")
+    private Guest guest;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "room_id")
+    @JoinColumn(name = "roomID")
     private Room room;
 
-    @Column(nullable = false)
+    @Column(name = "checkInDate", nullable = false)
     private LocalDate checkInDate;
 
-    @Column(nullable = false)
+    @Column(name = "checkOutDate", nullable = false)
     private LocalDate checkOutDate;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    // FIX: Remove @Enumerated and use @Convert
+    @Convert(converter = BookingStatusConverter.class)
+    @Column(name = "bookingStatus", nullable = false)
     private BookingStatus bookingStatus;
 
-    @Column(nullable = false)
-    private BigDecimal totalAmount;   // ✅ FIXED
+    @Column(name = "totalAmount", nullable = false)
+    private BigDecimal totalAmount;
 }
