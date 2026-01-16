@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import api from "../api/axios"; // Your axios instance
+import api from "../api/axios";
 import "./AuthPages.css";
 
 export default function Register() {
@@ -22,22 +22,30 @@ export default function Register() {
 		setError("");
 
 		try {
-			// This hits your @PostMapping("/register") in Spring Boot
+			// Hits @PostMapping("/api/auth/register") or similar
 			const response = await api.post("/auth/register", formData);
 
-			// On success, save user info and token
-			const { token, role, id, fullName } = response.data;
-			localStorage.setItem("token", token);
-			localStorage.setItem("role", role);
-			localStorage.setItem("userId", id);
-			localStorage.setItem("userName", fullName);
+			// IMPORTANT: Check if your backend actually returns these fields
+			if (response.data && response.data.token) {
+				const { token, role, id, fullName } = response.data;
 
-			// Navigate to guest dashboard (default role for registration)
-			navigate("/guest/dashboard");
-			window.location.reload();
+				localStorage.setItem("token", token);
+				localStorage.setItem("role", role || "GUEST");
+				localStorage.setItem("userId", id);
+				localStorage.setItem("userName", fullName);
+
+				// Standard flow: Guest registers -> goes to Guest Dashboard
+				navigate("/guest/dashboard");
+				window.location.reload();
+			} else {
+				// If backend only returns a message, redirect to login
+				alert("Registration successful! Please login.");
+				navigate("/login");
+			}
 		} catch (err) {
 			console.error("Registration Error:", err);
-			setError(err.response?.data?.message || "Registration failed. Try a different username.");
+			const msg = err.response?.data?.message || err.response?.data || "Registration failed.";
+			setError(msg);
 		}
 	};
 
@@ -46,7 +54,7 @@ export default function Register() {
 			<h2 className="login-title">Register as Guest</h2>
 			<p className="login-subtitle">Create a new account to book your stay</p>
 
-			{error && <p className="error-message" style={{ color: "var(--accent-color)", fontSize: "0.85rem", marginBottom: "1rem" }}>{error}</p>}
+			{error && <p className="error-message" style={{ color: "#ff4d4d", fontSize: "0.85rem", marginBottom: "1rem" }}>{error}</p>}
 
 			<form onSubmit={handleSubmit}>
 				<div className="form-group">

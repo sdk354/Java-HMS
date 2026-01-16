@@ -9,10 +9,11 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RoomResponse {
-    private Integer id;          // This will act as the unique internal identifier
-    private Integer roomNumber;  // This is the display number (e.g., 101)
-    private String type;        // Room Type Name (e.g., "Deluxe")
-    private BigDecimal price;    // The calculated dynamic price
-    private boolean available;   // Availability status
-    private Integer capacity;    // Added: How many guests can fit in the room
+    private Integer id;
+    private Integer roomNumber;
+    private String type;
+    private BigDecimal price;
+    private boolean available;
+    private Integer capacity;
+    private String status; // <--- ADD THIS LINE
 }

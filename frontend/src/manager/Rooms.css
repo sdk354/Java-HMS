@@ -1,85 +1,139 @@
-/* Rooms.css */
-
-/* Status Color Mapping - Darker versions for high contrast text and dots */
-.available { color: #1b5e20 !important; }   /* Deep Forest Green */
-.occupied { color: #b71c1c !important; }    /* Deep Crimson Red */
-.cleaning { color: #e65100 !important; }    /* Deep Burnt Orange */
-.maintenance { color: #4527a0 !important; } /* Deep Royal Purple */
-
-/* Status Dot Mapping - Matches the Room Map dots */
-.status-dot.available { background-color: #1b5e20; }
-.status-dot.occupied { background-color: #b71c1c; }
-.status-dot.cleaning { background-color: #e65100; }
-.status-dot.maintenance { background-color: #4527a0; }
+/* ==========================================================================
+   STATUS COLORS & DOTS
+   ========================================================================== */
+.available { color: #2ecc71 !important; }
+.occupied { color: #e74c3c !important; }
+.cleaning { color: #f1c40f !important; }
+.maintenance { color: #9b59b6 !important; }
 
 .status-dot {
-  width: 12px;
-  height: 12px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   display: inline-block;
-  /* Glow matches the dot color for a premium "active" look */
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease;
+  transition: all 0.3s ease;
 }
 
-.rooms-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 2rem;
-  margin-top: 1rem;
+.status-dot.available { background-color: #2ecc71; box-shadow: 0 0 10px rgba(46, 204, 113, 0.5); }
+.status-dot.occupied { background-color: #e74c3c; box-shadow: 0 0 10px rgba(231, 76, 60, 0.5); }
+.status-dot.cleaning { background-color: #f1c40f; box-shadow: 0 0 10px rgba(241, 196, 15, 0.5); }
+.status-dot.maintenance { background-color: #9b59b6; box-shadow: 0 0 10px rgba(155, 89, 182, 0.5); }
+
+/* ==========================================================================
+   HEADER & SEARCH BAR
+   ========================================================================== */
+.manager-header {
+  margin-bottom: 2.5rem;
   width: 100%;
 }
 
-/* Glass Card Styling */
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.search-container {
+  position: relative;
+  min-width: 320px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 1rem 1rem 1rem 3.2rem;
+  border-radius: 14px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+  font-size: 0.95rem;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.search-input:focus {
+  border-color: var(--accent-color);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.search-container::before {
+  content: '🔍';
+  position: absolute;
+  left: 1.2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1rem;
+  opacity: 0.6;
+}
+
+/* ==========================================================================
+   ROOM CARDS GRID
+   ========================================================================== */
+.rooms-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+  width: 100%;
+}
+
 .glass-card.room-card {
   background: var(--card-bg);
   border: 1px solid var(--border-color);
-  border-radius: 24px;
-  padding: 2.5rem !important;
+  border-radius: 28px;
+  padding: 1.8rem !important;
   display: flex;
   flex-direction: column;
-  min-height: 480px;
-  justify-content: space-between;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  box-sizing: border-box;
+  min-height: 400px;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .glass-card.room-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+  transform: translateY(-8px);
+  border-color: var(--accent-color);
 }
 
 .room-card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.5rem;
+  margin-bottom: 1.2rem;
 }
 
-/* Typography Alignment */
+.room-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  background: rgba(128, 128, 128, 0.1);
+  padding: 6px 14px;
+  border-radius: 100px;
+  color: var(--text-secondary);
+}
+
+/* Typography */
 .room-number {
-  font-size: 2.2rem;
-  font-weight: 900; /* Increased weight for GP style */
+  font-size: 1.8rem;
+  font-weight: 800;
+  margin: 0;
   color: var(--text-color);
-  margin: 0.5rem 0;
 }
 
 .room-type {
-  font-size: 1rem;
-  color: var(--text-secondary); /* Using centralized color variable */
-  font-weight: 500;
-  margin-bottom: 2rem;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-top: 0.2rem;
 }
 
-/* Bottom Stats Grid */
+/* Statistics Section */
 .room-stats {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
-  padding-top: 1.5rem;
+  gap: 1rem;
+  margin: 2rem 0;
+  padding: 1.5rem 0;
   border-top: 1px solid var(--border-color);
-  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .stat-item {
@@ -88,20 +142,22 @@
 }
 
 .stat-label {
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   text-transform: uppercase;
-  letter-spacing: 1.5px;
+  letter-spacing: 1px;
   color: var(--text-secondary);
-  font-weight: 700;
-  margin-bottom: 0.5rem;
+  font-weight: 600;
+  opacity: 0.7;
 }
 
 .stat-value {
-  font-size: 1.8rem !important;
-  font-weight: 800;
+  font-size: 1.2rem;
+  font-weight: 700;
   color: var(--text-color);
+  margin-top: 4px;
 }
 
+/* Footer Section */
 .room-footer {
   display: flex;
   justify-content: space-between;
@@ -110,27 +166,92 @@
 }
 
 .room-status-text {
-  font-size: 0.9rem;
-  font-weight: 700;
-  text-transform: uppercase;
+  font-size: 0.75rem;
+  font-weight: 800;
   letter-spacing: 0.5px;
+  text-transform: uppercase;
 }
 
-/* Manage Button - Now dynamically uses the --accent-color */
 .room-edit-btn {
-  background-color: var(--accent-color) !important;
+  background: var(--accent-color);
   color: white;
   border: none;
-  padding: 0.8rem 1.8rem;
+  padding: 0.7rem 1.4rem;
   border-radius: 12px;
   font-weight: 700;
+  font-size: 0.85rem;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .room-edit-btn:hover {
   filter: brightness(1.1);
-  transform: scale(1.02);
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* ==========================================================================
+   MODAL STYLING
+   ========================================================================== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  width: 90%;
+  max-width: 450px;
+  padding: 2.5rem !important;
+  background: var(--bg-primary) !important;
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-bottom: 0.6rem;
+}
+
+.modal-input, .modal-select {
+  width: 100%;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  padding: 12px;
+  border-radius: 10px;
+  color: var(--text-color);
+  font-size: 1rem;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.action-btn {
+  flex: 1;
+  padding: 1rem;
+  border-radius: 12px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+}
+
+.action-btn:not(.cancel) {
+  background: var(--accent-color);
+  color: white;
+}
+
+.action-btn.cancel {
+  background: rgba(128, 128, 128, 0.1);
+  color: var(--text-color);
 }

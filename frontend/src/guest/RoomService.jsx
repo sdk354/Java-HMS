@@ -6,20 +6,23 @@ const RoomService = () => {
 	const [menuItems, setMenuItems] = useState([]);
 	const [cart, setCart] = useState([]);
 	const [loading, setLoading] = useState(true);
+	const [isSubmitting, setIsSubmitting] = useState(false);
+
+	// Get current user from localStorage for the order context
+	const userString = localStorage.getItem("user");
+	const currentUser = userString ? JSON.parse(userString) : null;
 
 	useEffect(() => {
 		const fetchServices = async () => {
 			try {
+				// Matches ServiceItemController @RequestMapping("/api/service-items")
 				const response = await api.get('/service-items');
 
-				// Logging for verification
-				console.log("Raw Data from Backend:", response.data);
-
-				// FIX: Your backend uses the boolean field 'available'
+				// Filtering based on your backend 'available' boolean
 				const available = response.data.filter(item => item.available === true);
 				setMenuItems(available);
 			} catch (err) {
-				console.error("API Error:", err);
+				console.error("API Error fetching menu:", err);
 				setMenuItems([]);
 			} finally {
 				setLoading(false);
@@ -42,8 +45,49 @@ const RoomService = () => {
 		setCart(prev => prev.filter(item => item.itemID !== itemID));
 	};
 
-	// FIX: Using 'item.price' to match your backend log
 	const totalCost = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+
+	// ================= SUBMIT ORDER LOGIC =================
+	const handlePlaceOrder = async () => {
+		if (cart.length === 0) return;
+
+		if (!currentUser) {
+			alert("Please log in to place an order.");
+			return;
+		}
+
+		setIsSubmitting(true);
+		try {
+			/** * PAYLOAD ADJUSTMENT:
+			 * Matches your OrderController @PostMapping and PlaceOrderRequest DTO
+			 * URL: /api/orders
+			 */
+			const orderPayload = {
+				guestId: currentUser.userID,
+				items: cart.map(item => ({
+					serviceItemId: item.itemID, // Note: camelCase serviceItemId
+					quantity: item.qty
+				})),
+				totalPrice: totalCost
+			};
+
+			// CORRECTED PATH: /orders (Matches your OrderController)
+			const response = await api.post('/orders', orderPayload);
+
+			if (response.status === 200 || response.status === 201) {
+				alert("Order placed successfully! Your items are on the way.");
+				setCart([]); // Clear the cart
+			}
+		} catch (err) {
+			console.error("Order Submission Error:", err);
+			const errorMsg = err.response?.status === 403
+				? "Access Denied: You must be logged in as a GUEST to order."
+				: "Failed to place order. Please check your connection.";
+			alert(errorMsg);
+		} finally {
+			setIsSubmitting(false);
+		}
+	};
 
 	if (loading) return <div className="service-container">Loading Menu...</div>;
 
@@ -57,12 +101,8 @@ const RoomService = () => {
 							menuItems.map(item => (
 								<div key={item.itemID} className="glass-card service-item">
 									<div className="service-cat">{item.category}</div>
-
-									{/* FIX: Changed from itemName to name */}
 									<h3 className="service-name">{item.name}</h3>
-
 									<div className="service-footer">
-										{/* FIX: Changed from unitPrice to price */}
 										<span className="service-price">LKR {item.price.toLocaleString()}</span>
 										<button className="add-btn" onClick={() => addToCart(item)}>
 											Add to Cart
@@ -78,6 +118,7 @@ const RoomService = () => {
 					</div>
 				</div>
 
+				{/* Sidebar Cart */}
 				<div className="cart-sidebar glass-card">
 					<h3 className="text-xl font-bold mb-4">Your Order</h3>
 					{cart.length === 0 ? (
@@ -92,7 +133,7 @@ const RoomService = () => {
 											<span className="text-xs opacity-70">{i.qty} x LKR {i.price}</span>
 										</div>
 										<div className="flex items-center gap-2">
-											<span className="font-bold">LKR {i.price * i.qty}</span>
+											<span className="font-bold">LKR {(i.price * i.qty).toLocaleString()}</span>
 											<button
 												onClick={() => removeFromCart(i.itemID)}
 												className="text-red-400 ml-2 font-bold"
@@ -104,10 +145,16 @@ const RoomService = () => {
 									</div>
 								))}
 							</div>
-							<div className="cart-total">
+							<div className="cart-total" style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '10px', marginTop: '10px' }}>
 								<strong>Total: LKR {totalCost.toLocaleString()}</strong>
 							</div>
-							<button className="button-accent w-full mt-4">Place Order</button>
+							<button
+								className="button-accent w-full mt-4"
+								onClick={handlePlaceOrder}
+								disabled={isSubmitting}
+							>
+								{isSubmitting ? "Processing..." : "Place Order"}
+							</button>
 						</>
 					)}
 				</div>

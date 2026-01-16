@@ -69,10 +69,19 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
 
-                        // Switch to hasAnyAuthority for exact string matching
-                        // Inside SecurityConfig.java requestMatchers
+                        .requestMatchers(HttpMethod.GET, "/api/rooms/**").authenticated()
+
+                        // FIXED: Added Manager authorities here
+                        .requestMatchers("/api/admin/**").hasAnyAuthority("ROLE_ADMIN", "admin", "ROLE_MANAGER", "manager")
+
+                        .requestMatchers(HttpMethod.GET, "/api/cleaning-tasks/**").hasAnyAuthority("ROLE_ADMIN", "admin", "ROLE_HOUSEKEEPING", "housekeeping")
+                        .requestMatchers(HttpMethod.PUT, "/api/cleaning-tasks/*/status").hasAnyAuthority("ROLE_ADMIN", "admin", "ROLE_HOUSEKEEPING", "housekeeping")
+
+                        .requestMatchers(HttpMethod.POST, "/api/cleaning-tasks/**").hasAnyAuthority("ROLE_ADMIN", "admin")
+                        .requestMatchers(HttpMethod.PUT, "/api/cleaning-tasks/**").hasAnyAuthority("ROLE_ADMIN", "admin")
+                        .requestMatchers(HttpMethod.DELETE, "/api/cleaning-tasks/**").hasAnyAuthority("ROLE_ADMIN", "admin")
+
                         .requestMatchers("/api/housekeeping/**").hasAnyAuthority("ROLE_HOUSEKEEPING", "housekeeping", "ROLE_ADMIN", "admin")
-                        .requestMatchers("/api/cleaning-tasks/**").hasAnyAuthority("ROLE_HOUSEKEEPING", "housekeeping", "ROLE_ADMIN")
 
                         .anyRequest().authenticated()
                 )

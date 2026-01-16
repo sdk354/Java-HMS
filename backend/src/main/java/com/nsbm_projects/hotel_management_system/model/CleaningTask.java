@@ -14,7 +14,7 @@ public class CleaningTask {
     private Integer taskID;
 
     @ManyToOne
-    @JoinColumn(name = "roomID")
+    @JoinColumn(name = "roomID") // Restored to original DB column name
     private Room room;
 
     @ManyToOne

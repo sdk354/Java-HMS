@@ -56,7 +56,13 @@ public class RoomService {
         room.setRoomNumber(request.getRoomNumber());
         room.setRoomType(type);
         room.setFloorNumber(request.getFloorNumber());
-        room.setStatus(request.isAvailable() ? RoomStatus.AVAILABLE : RoomStatus.MAINTENANCE);
+
+        // Use explicit status if provided, otherwise fallback to availability boolean
+        if (request.getStatus() != null) {
+            room.setStatus(RoomStatus.valueOf(request.getStatus().toUpperCase()));
+        } else {
+            room.setStatus(request.isAvailable() ? RoomStatus.AVAILABLE : RoomStatus.MAINTENANCE);
+        }
 
         Room saved = roomRepository.save(room);
         roomStatusPublisher.publish(saved);
@@ -75,6 +81,7 @@ public class RoomService {
         Room room = roomRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Room not found"));
 
+        // Handle Room Type Updates
         if (request.getRoomTypeId() != null) {
             RoomType type = roomTypeRepository.findById(request.getRoomTypeId())
                     .orElseThrow(() -> new IllegalArgumentException("Invalid Room Type ID"));
@@ -89,7 +96,21 @@ public class RoomService {
             room.setFloorNumber(request.getFloorNumber());
         }
 
-        room.setStatus(request.isAvailable() ? RoomStatus.AVAILABLE : RoomStatus.OCCUPIED);
+        // ================= FIX: STATUS LOGIC =================
+        // Instead of hardcoding OCCUPIED if !available, we check the request's status string.
+        if (request.getStatus() != null) {
+            try {
+                RoomStatus newStatus = RoomStatus.valueOf(request.getStatus().toUpperCase());
+                room.setStatus(newStatus);
+            } catch (IllegalArgumentException e) {
+                // Fallback if status string is invalid
+                room.setStatus(request.isAvailable() ? RoomStatus.AVAILABLE : RoomStatus.OCCUPIED);
+            }
+        } else {
+            // Backward compatibility for requests only sending 'available' boolean
+            room.setStatus(request.isAvailable() ? RoomStatus.AVAILABLE : RoomStatus.OCCUPIED);
+        }
+
         Room updated = roomRepository.save(room);
         roomStatusPublisher.publish(updated);
 
@@ -110,11 +131,9 @@ public class RoomService {
         RoomType type = room.getRoomType();
         BigDecimal finalPrice = (type != null) ? type.getBasePrice() : BigDecimal.ZERO;
 
-        // Fallback capacity if not defined in RoomType
         Integer capacity = (type != null && type.getCapacity() != null) ? type.getCapacity() : 2;
 
         if (type != null && finalPrice != null) {
-            // Apply Dynamic Pricing Multiplier for TODAY
             List<Pricing> activeRules = pricingRepository.findActiveRulesForRoomType(
                     type.getTypeID(),
                     LocalDate.now()
@@ -127,12 +146,13 @@ public class RoomService {
         }
 
         return new RoomResponse(
-                room.getRoomNumber(),        // id (using roomNumber as ID)
-                room.getRoomNumber(),        // roomNumber
-                type != null ? type.getTypeName() : "N/A", // type
-                finalPrice,                  // price
-                room.getStatus() == RoomStatus.AVAILABLE, // available
-                capacity                     // capacity
+                room.getRoomNumber(),                      // id
+                room.getRoomNumber(),                      // roomNumber
+                type != null ? type.getTypeName() : "N/A", // type name
+                finalPrice,                                // calculated price
+                room.getStatus() == RoomStatus.AVAILABLE,  // boolean available
+                capacity,                                  // capacity
+                room.getStatus().name()                    // actual status string (CLEANING, etc)
         );
     }
 }

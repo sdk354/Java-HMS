@@ -9,22 +9,12 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RoomRequest {
-
     private Integer roomNumber;
-
-    // The ID of the RoomType (for internal mapping)
     private Integer roomTypeId;
-
-    // The display name of the type (e.g., "Deluxe Suite")
     private String type;
-
     private Integer floorNumber;
-
     private boolean available;
-
-    // The price if you want to update the RoomType's base price via this request
+    private String status; // <--- ADD THIS LINE
     private BigDecimal price;
-
-    // Coordinates for the interactive hotel map
     private String mapCoordinates;
 }

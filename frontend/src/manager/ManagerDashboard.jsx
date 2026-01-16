@@ -5,15 +5,22 @@ import "./ManagerDashboard.css";
 const ManagerDashboard = () => {
 	const [stats, setStats] = useState(null);
 	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState(null);
 
 	useEffect(() => {
 		const fetchDashboardData = async () => {
 			try {
 				setLoading(true);
+				setError(null);
 				const response = await api.get("/admin/stats/summary");
 				setStats(response.data);
 			} catch (error) {
 				console.error("Error fetching dashboard stats:", error);
+				if (error.response?.status === 403) {
+					setError("Access Denied: You do not have Managerial permissions.");
+				} else {
+					setError("Failed to load financial data.");
+				}
 			} finally {
 				setLoading(false);
 			}
@@ -31,34 +38,35 @@ const ManagerDashboard = () => {
 		{
 			label: "Total Revenue",
 			value: stats?.totalRevenue,
-			sub: "From Bill (grandTotal)",
-			emoji: "📊",
-			trend: "+12.5%"
+			emoji: "📊"
 		},
 		{
 			label: "Room Charges",
 			value: stats?.roomCharges,
-			sub: "From Bill (roomCharges)",
-			emoji: "🏨",
-			trend: "+8.2%"
+			emoji: "🏨"
 		},
 		{
 			label: "Service Revenue",
 			value: stats?.serviceRevenue,
-			sub: "From ServiceOrder (totalCost)",
-			emoji: "🍽️",
-			trend: "+14.1%"
+			emoji: "🍽️"
 		},
 		{
 			label: "Tax Collected",
-			value: stats?.taxAmount, // Fixed: matched to backend key 'taxAmount'
-			sub: "From Bill (taxAmount)",
-			emoji: "📜",
-			trend: "+10.0%"
+			value: stats?.taxAmount,
+			emoji: "📜"
 		}
 	];
 
 	if (loading) return <div className="manager-container">Loading Financial Data...</div>;
+
+	if (error) return (
+		<div className="manager-container">
+			<div className="glass-card" style={{padding: '40px', textAlign: 'center', border: '1px solid rgba(255,0,0,0.3)'}}>
+				<h2 style={{color: '#ff4d4d'}}>⚠️ {error}</h2>
+				<p style={{opacity: 0.7, marginTop: '10px'}}>Please log in with a Manager or Admin account.</p>
+			</div>
+		</div>
+	);
 
 	return (
 		<div className="manager-container page-fade-in">
@@ -75,20 +83,8 @@ const ManagerDashboard = () => {
 						<p className="stat-value">
 							LKR {formatCurrency(card.value)}
 						</p>
-						<div className="stat-footer">
-							<span className="stat-subtext">{card.sub}</span>
-							<span className="stat-trend">{card.trend}</span>
-						</div>
 					</div>
 				))}
-			</div>
-
-			<div className="operational-stats-row" style={{marginTop: '30px', color: 'white', opacity: 0.8}}>
-				<p>
-					Operational Status: <strong>{stats?.occupancyRate || "0%"} Occupancy</strong> |
-					<strong> {stats?.activeStaff || 0} Active Staff</strong> |
-					<strong> {stats?.pendingTasks || 0} Pending Tasks</strong>
-				</p>
 			</div>
 		</div>
 	);

@@ -34,6 +34,7 @@ public class AuthService {
 
     // ================= REGISTER =================
     public AuthResponse register(RegisterRequest request) {
+        // Validation: Prevent duplicate accounts
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new IllegalArgumentException("Username already taken");
         }
@@ -41,21 +42,25 @@ public class AuthService {
             throw new IllegalArgumentException("Email already registered");
         }
 
+        // Builder pattern to create a new User entity
         User user = User.builder()
                 .username(request.getUsername())
                 .email(request.getEmail())
                 .fullName(request.getFullName())
                 .passwordHash(passwordEncoder.encode(request.getPassword()))
-                .role("guest")
+                .role("guest") // Default role for web registration
                 .enabled(true)
                 .build();
 
         userRepository.save(user);
+
+        // Directly log the user in by returning the token immediately after registration
         return generateAuthResponse(user);
     }
 
     // ================= LOGIN =================
     public AuthResponse login(LoginRequest request) {
+        // Triggers Spring Security Authentication process
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getUsername(),
@@ -80,20 +85,21 @@ public class AuthService {
 
     /**
      * Internal helper to build the response with JWT and Role mapping.
+     * This ensures the frontend receives the correct path strings for routing.
      */
     private AuthResponse generateAuthResponse(User user) {
         // 1. Prepare JWT Claims for the backend filter
         var claims = new HashMap<String, Object>();
-        claims.put("role", user.getRole()); // Value: "housekeeping"
+        claims.put("role", user.getRole());
 
         // 2. Generate token
         String token = jwtService.generateToken(user.getUsername(), claims);
 
         // 3. Format Role for Frontend routing
+        // React Router usually expects lowercase roles (e.g., /guest/dashboard)
         String formattedRole = user.getRole().toLowerCase();
 
-        // Maps 'admin' to 'administration' for React paths,
-        // leaves 'housekeeping' as is.
+        // Specific Mapping: If database says 'admin', React path expects 'administration'
         if (formattedRole.equals("admin")) {
             formattedRole = "administration";
         }
@@ -103,7 +109,7 @@ public class AuthService {
                 .tokenType("Bearer")
                 .role(formattedRole)
                 .fullName(user.getFullName())
-                .userID(user.getUserID()) // Mapped to "id" in JSON
+                .userID(user.getUserID())
                 .build();
     }
 }

@@ -1,206 +1,400 @@
 .live-map-container {
   display: grid;
-  grid-template-columns: 320px 1fr;
+  grid-template-columns: 350px 1fr;
   height: calc(100vh - 70px);
   background: var(--bg-primary);
   color: var(--text-color);
+  overflow: hidden;
 }
 
-/* Sidebar & Inspector */
+/* ==========================================================================
+   SIDEBAR & INSPECTOR
+   ========================================================================== */
 .map-sidebar {
   background: var(--bg-secondary);
   border-right: 1px solid var(--border-color);
-  padding: 2rem;
+  padding: 2.5rem;
   display: flex;
   flex-direction: column;
   gap: 2rem;
   overflow-y: auto;
+  box-shadow: 4px 0 15px rgba(0, 0, 0, 0.05);
+}
+
+.sidebar-top {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
 .map-title {
-  font-size: 1.5rem;
-  font-weight: 800;
-  margin-bottom: 1.5rem;
+  font-size: 1.8rem;
+  font-weight: 900;
+  margin: 0;
+  letter-spacing: -0.5px;
 }
 
 .floor-selector {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 
 .floor-btn {
-  padding: 12px;
-  border-radius: 8px;
+  padding: 14px 20px;
+  border-radius: 12px;
   border: 1px solid var(--border-color);
   background: var(--bg-primary);
   color: var(--text-color);
   cursor: pointer;
-  font-weight: 600;
-  transition: all 0.2s;
+  font-weight: 700;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   text-align: left;
+}
+
+.floor-btn:hover {
+  border-color: var(--accent-color);
+  transform: translateX(5px);
 }
 
 .floor-btn.active {
   background: var(--accent-color);
   color: white;
   border-color: var(--accent-color);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 20px rgba(var(--accent-rgb), 0.3);
 }
 
-/* Map Viewport & Legend */
+/* Room Inspector Card */
+.room-inspector {
+  background: #ffffff;
+  padding: 1.8rem;
+  border-radius: 20px;
+  border-left: 8px solid var(--accent-color);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+  color: #1a1a1a;
+  animation: slideIn 0.3s ease-out;
+}
+
+[data-theme='dark'] .room-inspector {
+  background: var(--bg-secondary);
+  color: #ffffff;
+  border: 1px solid var(--border-color);
+  border-left: 8px solid var(--accent-color);
+}
+
+.inspector-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.inspector-header h3 {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 800;
+}
+
+.inspector-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.inspector-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.95rem;
+}
+
+.inspector-row span:first-child {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.inspector-row span:last-child {
+  font-weight: 700;
+}
+
+.inspector-divider {
+  margin: 1.5rem 0;
+  border: 0;
+  border-top: 1px solid var(--border-color);
+  opacity: 0.5;
+}
+
+.inspector-placeholder {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--text-secondary);
+  border: 2px dashed var(--border-color);
+  border-radius: 20px;
+  font-weight: 500;
+}
+
+/* ==========================================================================
+   FORMS & ACTIONS
+   ========================================================================== */
+.inspector-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  animation: slideIn 0.3s ease-out;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group label {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.inspector-input {
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-primary);
+  color: var(--text-color);
+  font-size: 1rem;
+  font-weight: 500;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.inspector-input:focus {
+  border-color: var(--accent-color);
+}
+
+.inspector-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.action-btn {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 1rem;
+  transition: all 0.2s;
+  background: var(--accent-color);
+  color: white;
+  margin-top: 1rem;
+}
+
+.inspector-actions .action-btn {
+  margin-top: 0;
+}
+
+.action-btn.confirm {
+  background: var(--accent-color);
+  flex: 2;
+}
+
+.action-btn.cancel {
+  background: transparent;
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+  flex: 1;
+}
+
+.action-btn:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+.action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  filter: grayscale(1);
+  transform: none;
+}
+
+/* ==========================================================================
+   MAP VIEWPORT & BLUEPRINT
+   ========================================================================== */
 .map-viewport {
-  padding: 2rem;
+  padding: 3rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-image: radial-gradient(var(--border-color) 1px, transparent 1px);
-  background-size: 30px 30px; /* Blueprint grid effect */
+  background-image: radial-gradient(var(--border-color) 1.5px, transparent 1.5px);
+  background-size: 40px 40px;
+  overflow: auto;
 }
 
-/* Floor Plan Grid Layout */
 .floor-plan-grid {
+  background: var(--bg-secondary);
+  padding: 50px;
+  border-radius: 32px;
+  box-shadow: 0 30px 60px rgba(0,0,0,0.2);
+  border: 1px solid var(--border-color);
+  min-width: 700px;
+  transition: all 0.5s ease;
+}
+
+.grid-layout {
   display: flex;
   flex-direction: column;
   gap: 20px;
-  background: var(--bg-secondary);
-  padding: 40px;
-  border-radius: 24px;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-  border: 1px solid var(--border-color);
-  min-width: 650px;
 }
 
 .room-row {
-  display: grid;
-  grid-template-columns: repeat(5, 110px);
-  gap: 15px;
+  display: flex;
   justify-content: center;
+  gap: 20px;
+  flex-wrap: nowrap;
 }
 
 .hallway {
   width: 100%;
-  height: 60px;
+  height: 70px;
   background: var(--bg-primary);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 800;
-  letter-spacing: 6px;
+  font-weight: 900;
+  letter-spacing: 8px;
   color: var(--text-secondary);
-  opacity: 0.6;
-  border-radius: 8px;
+  opacity: 0.5;
+  border-radius: 12px;
   border: 2px dashed var(--border-color);
-  font-size: 0.75rem;
-  margin: 10px 0;
+  font-size: 0.8rem;
 }
 
-/* Room Blocks */
+/* ==========================================================================
+   ROOM BLOCKS & STATUS (Updated Transparency)
+   ========================================================================== */
 .room-block {
+  width: 110px;
   height: 120px;
-  background: rgba(128, 128, 128, 0.05);
-  border-radius: 12px;
+  background: var(--bg-primary);
+  border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   border: 3px solid var(--border-color);
   position: relative;
+  box-sizing: border-box;
 }
 
-/* Status Variants - High Contrast */
-.room-block.available { border-color: #2e7d32; background: rgba(46, 125, 50, 0.1); }
-.room-block.occupied { border-color: #d32f2f; background: rgba(211, 47, 47, 0.1); }
-.room-block.cleaning { border-color: #ef6c00; background: rgba(239, 108, 0, 0.1); }
-.room-block.maintenance { border-color: #6a1b9a; background: rgba(106, 27, 154, 0.1); }
+/* UPDATED OPACITY:
+   Increased background opacity from 0.08 to 0.25 for better visibility
+   Cleaning (Orange) bumped to 0.3 to stand out against Red
+*/
+.room-block.available {
+  border-color: #2e7d32;
+  background: rgba(46, 125, 50, 0.25);
+  color: #1b5e20;
+}
+
+.room-block.occupied {
+  border-color: #c62828;
+  background: rgba(198, 40, 40, 0.25);
+  color: #b71c1c;
+}
+
+.room-block.cleaning {
+  border-color: #ef6c00;
+  background: rgba(239, 108, 0, 0.3); /* Slightly stronger orange */
+  color: #e65100;
+}
+
+.room-block.maintenance {
+  border-color: #6a1b9a;
+  background: rgba(106, 27, 154, 0.25);
+  color: #4a148c;
+}
 
 .room-block:hover {
-  transform: translateY(-5px);
-  filter: brightness(1.2);
+  transform: translateY(-8px);
+  filter: brightness(1.1);
+  border-color: var(--accent-color);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
 }
 
 .room-block.selected {
-  transform: scale(1.08);
+  transform: scale(1.15);
   z-index: 10;
-  background: white;
+  background: var(--bg-primary);
+  border-color: var(--accent-color);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.2);
 }
-
-[data-theme='dark'] .room-block.selected { background: var(--bg-primary); }
-
-/* Selection Glows */
-.room-block.selected.available { box-shadow: 0 0 30px rgba(46, 125, 50, 0.4); }
-.room-block.selected.occupied { box-shadow: 0 0 30px rgba(211, 47, 47, 0.4); }
-.room-block.selected.cleaning { box-shadow: 0 0 30px rgba(239, 108, 0, 0.4); }
-.room-block.selected.maintenance { box-shadow: 0 0 30px rgba(106, 27, 154, 0.4); }
 
 .room-label {
   font-weight: 900;
-  font-size: 1.3rem;
-  color: inherit;
+  font-size: 1.4rem;
 }
 
-/* Room Inspector */
-.room-inspector {
-  background: #ffffff;
-  padding: 1.5rem;
-  border-radius: 16px;
-  border-left: 6px solid var(--accent-color);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
-  color: #1a1a1a;
-}
-
-[data-theme='dark'] .room-inspector {
-  background: var(--bg-primary);
-  color: #ffffff;
-  border: 1px solid var(--border-color);
-  border-left-width: 6px;
-}
-
+/* Status Badges */
 .status-badge {
   padding: 4px 12px;
   border-radius: 20px;
   font-size: 0.75rem;
   text-transform: uppercase;
   font-weight: 700;
+  letter-spacing: 1px;
 }
 
-.status-badge.available { background: #e8f5e9; color: #2e7d32; }
-.status-badge.occupied { background: #ffebee; color: #c62828; }
+.status-badge.available { background: #e8f5e9; color: #1b5e20; }
+.status-badge.occupied { background: #ffebee; color: #b71c1c; }
+.status-badge.cleaning { background: #fff3e0; color: #e65100; }
+.status-badge.maintenance { background: #ede7f6; color: #4527a0; }
 
-/* Legend */
+/* ==========================================================================
+   LEGEND
+   ========================================================================== */
 .map-legend-bottom {
   margin-top: 3rem;
   display: flex;
-  gap: 30px;
-  padding: 16px 32px;
+  gap: 35px;
+  padding: 18px 40px;
   background: var(--bg-secondary);
   border-radius: 50px;
   border: 1px solid var(--border-color);
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
 }
 
 .leg-item {
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: var(--text-secondary);
+  gap: 12px;
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: var(--text-color);
 }
 
-.dot { width: 12px; height: 12px; border-radius: 50%; }
-.dot.available { background: #2e7d32; }
-.dot.occupied { background: #d32f2f; }
-.dot.cleaning { background: #ef6c00; }
-.dot.maintenance { background: #6a1b9a; }
+.dot { width: 14px; height: 14px; border-radius: 50%; }
+.dot.available { background: #2e7d32; box-shadow: 0 0 10px rgba(46, 125, 50, 0.5); }
+.dot.occupied { background: #c62828; box-shadow: 0 0 10px rgba(198, 40, 40, 0.5); }
+.dot.cleaning { background: #ef6c00; box-shadow: 0 0 10px rgba(239, 108, 0, 0.5); }
+.dot.maintenance { background: #6a1b9a; box-shadow: 0 0 10px rgba(106, 27, 154, 0.5); }
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
 .live-map-loading {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  font-size: 1.2rem;
-  font-weight: 600;
+  font-size: 1.5rem;
+  font-weight: 800;
+  background: var(--bg-primary);
+  color: var(--accent-color);
 }

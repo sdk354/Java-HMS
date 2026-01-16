@@ -3,17 +3,22 @@ import { useNavigate } from 'react-router-dom';
 import './GuestDashboard.css';
 import api from "../api/axios.js";
 
-const GuestDashboard = ({ user }) => {
+const GuestDashboard = ({ user: propsUser }) => {
 	const navigate = useNavigate();
 	const [activeBooking, setActiveBooking] = useState(null);
 	const [activeOrder, setActiveOrder] = useState(null);
 	const [loading, setLoading] = useState(true);
 
-	const displayName = user?.fullName || "Guest";
+	// Get user from props or localStorage safely
+	const userString = localStorage.getItem("user");
+	const currentUser = propsUser || (userString ? JSON.parse(userString) : null);
+
+	const displayName = currentUser?.fullName || "Guest";
 
 	useEffect(() => {
 		const fetchDashboardData = async () => {
-			if (!user) {
+			// If still no user, stop loading and wait
+			if (!currentUser?.userID) {
 				setLoading(false);
 				return;
 			}
@@ -21,43 +26,36 @@ const GuestDashboard = ({ user }) => {
 			try {
 				setLoading(true);
 
-				// Check if your axios baseURL already includes /api
-				// If it does, use "/bookings/my-active". If not, use "/api/bookings/my-active"
+				// 1. Fetch Active Booking
 				const bookingRes = await api.get("/bookings/my-active");
-
-				// Axios returns data in the .data property
-				// We check for 200 (OK) and 204 (No Content)
-				if (bookingRes.status === 200) {
+				if (bookingRes.data) {
 					setActiveBooking(bookingRes.data);
-				} else {
-					setActiveBooking(null);
 				}
 
-				// Fetch the most recent service order (Handling 404/Empty gracefully)
-				try {
-					const orderRes = await api.get("/services/my-latest-order");
-					if (orderRes.status === 200) setActiveOrder(orderRes.data);
-				} catch (e) {
-					console.log("No active orders found.");
+				// 2. Fetch Orders for this guest
+				// Using the specific guest endpoint from your BookingController
+				const orderRes = await api.get(`/bookings/guest/${currentUser.userID}`);
+				if (orderRes.data && Array.isArray(orderRes.data)) {
+					// Find the most recent order (first in list usually)
+					setActiveOrder(orderRes.data[0]);
 				}
 
 			} catch (err) {
-				console.error("Error loading dashboard data:", err);
+				console.error("Dashboard Fetch Error:", err);
+				// Don't crash the page, just keep states as null
 			} finally {
-				// Essential: ensures loading is false even if the request fails
 				setLoading(false);
 			}
 		};
 
 		fetchDashboardData();
-	}, [user]);
+	}, [currentUser?.userID]); // Only re-run if the ID actually changes
 
 	if (loading) {
 		return (
 			<div className="dashboard-container">
 				<div className="loading-state">
-					<div className="spinner"></div>
-					<p>Loading your stay...</p>
+					<p>Loading your dashboard...</p>
 				</div>
 			</div>
 		);
@@ -68,78 +66,62 @@ const GuestDashboard = ({ user }) => {
 			<header className="mb-8">
 				<h1 className="text-3xl font-bold">Welcome, {displayName}</h1>
 				{activeBooking ? (
-					<p className="opacity-60">
-						You are checked into Room {activeBooking.roomNumber}
-					</p>
+					<p className="opacity-60">Checked into Room {activeBooking.roomNumber}</p>
 				) : (
-					<p className="opacity-60">No active check-in found for today.</p>
+					<p className="opacity-60">Welcome back! No active check-in today.</p>
 				)}
 			</header>
 
 			<div className="dashboard-grid">
 				{/* Reservation Card */}
-				<div className="glass-card" style={{ borderLeft: '4px solid var(--accent-color)' }}>
-					<div>
-						<h3 className="card-title">My Reservation</h3>
-						{activeBooking ? (
-							<>
-								<p className="text-sm">
-									{new Date(activeBooking.checkInDate).toLocaleDateString()} - {new Date(activeBooking.checkOutDate).toLocaleDateString()}
-								</p>
-								<p className="text-xs mt-2 opacity-60">Status: {activeBooking.bookingStatus}</p>
-							</>
-						) : (
-							<p className="text-sm">Ready to book your next stay?</p>
-						)}
-					</div>
+				<div className="glass-card" style={{ borderLeft: '4px solid #3b82f6' }}>
+					<h3 className="card-title">My Reservation</h3>
+					{activeBooking ? (
+						<div className="mt-2">
+							<p className="text-sm">Room {activeBooking.roomNumber}</p>
+							<p className="text-xs opacity-60">Status: {activeBooking.bookingStatus}</p>
+						</div>
+					) : (
+						<p className="text-sm opacity-60">No upcoming stays found.</p>
+					)}
 					<button
 						onClick={() => navigate(activeBooking ? '/guest/my-reservations' : '/rooms')}
-						className="mt-4 text-xs font-bold uppercase tracking-widest"
-						style={{ color: 'var(--accent-color)', background: 'none', border: 'none', padding: 0, textAlign: 'left', cursor: 'pointer' }}
+						className="mt-4 text-xs font-bold uppercase tracking-widest cursor-pointer"
+						style={{ color: '#3b82f6', background: 'none', border: 'none', padding: 0 }}
 					>
 						{activeBooking ? "View Details" : "Book Now"}
 					</button>
 				</div>
 
-				{/* Live Service Order Tracking */}
+				{/* Order Status Card */}
 				<div className="glass-card">
-					<div>
-						<h3 className="card-title">Order Status</h3>
-						{activeOrder ? (
-							<>
-								<div className="stat-value" style={{ fontSize: '1.5rem', fontWeight: '600' }}>
-									{activeOrder.status}...
-								</div>
-								<p className="text-sm opacity-60">Your "{activeOrder.itemName}" is on the way.</p>
-								<div className="progress-bar-container">
-									<div className="progress-bar-fill"
-										 style={{ width: activeOrder.status === 'PREPARING' ? '50%' : '90%' }}>
-									</div>
-								</div>
-							</>
-						) : (
-							<p className="text-sm opacity-60">No active orders at the moment.</p>
-						)}
-					</div>
+					<h3 className="card-title">Recent Order</h3>
+					{activeOrder ? (
+						<div className="mt-2">
+							<div className="stat-value" style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>
+								{activeOrder.bookingStatus || 'Processing'}
+							</div>
+							<p className="text-xs opacity-60">Total: LKR {activeOrder.totalAmount}</p>
+						</div>
+					) : (
+						<p className="text-sm opacity-60">No recent orders.</p>
+					)}
 					<button
 						onClick={() => navigate('/guest/services')}
-						className="mt-4 text-xs font-bold uppercase tracking-widest opacity-60"
-						style={{ background: 'none', border: 'none', padding: 0, textAlign: 'left', cursor: 'pointer', color: 'var(--text-color)' }}
+						className="mt-4 text-xs font-bold uppercase tracking-widest cursor-pointer"
+						style={{ color: 'rgba(255,255,255,0.6)', background: 'none', border: 'none', padding: 0 }}
 					>
-						Order History
+						New Order
 					</button>
 				</div>
 
-				{/* Service Card */}
-				<div className="glass-card accent-card">
-					<div>
-						<h3 className="card-title">Room Service</h3>
-						<p className="text-sm">Order food or spa services directly to your door.</p>
-					</div>
+				{/* Quick Action Card */}
+				<div className="glass-card accent-card" style={{ background: 'white', color: 'black' }}>
+					<h3 className="card-title" style={{ color: 'black' }}>Room Service</h3>
+					<p className="text-sm">Order food or spa services.</p>
 					<button
 						onClick={() => navigate('/guest/services')}
-						className="mt-4 bg-white text-black px-4 py-2 rounded-full text-xs font-bold"
-						style={{ width: 'fit-content', cursor: 'pointer', border: 'none' }}
+						className="mt-4 bg-black text-white px-4 py-2 rounded-full text-xs font-bold cursor-pointer border-none"
 					>
 						Order Now
 					</button>

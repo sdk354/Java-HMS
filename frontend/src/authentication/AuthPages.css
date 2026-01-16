@@ -37,7 +37,7 @@
 .auth-card {
   position: relative;
   z-index: 1;
-  background-color: var(--card-bg); /* */
+  background-color: var(--card-bg);
   border-radius: 12px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
   padding: 2.5rem;
@@ -80,7 +80,7 @@
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 8px;
   font-size: 1rem;
-  background-color: var(--bg-color); /* */
+  background-color: var(--bg-color);
   color: var(--text-color);
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
@@ -91,14 +91,13 @@
 
 .form-group input:focus {
   border-color: var(--accent-color);
-  box-shadow: 0 0 0 3px rgba(242, 140, 56, 0.2);
+  /* Changed to a neutral glow to prevent red-clash */
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
   outline: none;
 }
 
 /* Shared Buttons */
 .button-accent {
-  /* This variable is now dynamically updated by App.jsx
-     to #e67e22 (Light) or #5c67a3 (Dark) on Auth pages */
   background-color: var(--accent-color);
   color: #fff;
   border: none;
@@ -107,20 +106,27 @@
   font-size: 1rem;
   font-weight: 700;
   cursor: pointer;
-  /* Added background-color to the transition for the theme switch */
-  transition: transform 0.1s ease, filter 0.2s ease, background-color 0.4s ease-in-out;
+  transition: transform 0.1s ease, filter 0.2s ease, background-color 0.4s ease-in-out, box-shadow 0.2s ease;
   width: 100%;
   margin-top: 0.5rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
+/* Unified Hover State */
 .button-accent:hover {
-  background-color: #f39c12;
+  /* Instead of hardcoded colors that turn red, we slightly brighten the existing accent */
+  filter: brightness(1.1);
   transform: translateY(-1px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* Specific button colors for consistency if filter isn't enough */
+[data-theme="light"] .button-accent:hover {
+  background-color: #f28c38; /* Matches your gradient end-point exactly */
 }
 
 [data-theme="dark"] .button-accent:hover {
-  background-color: #727dbd; /* Brighter version of the dark blue */
+  background-color: #6a76b5; /* A slightly lighter version of the dark purple/blue */
 }
 
 .button-accent:active {
@@ -150,12 +156,6 @@
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
-}
-
-.form-group input:focus {
-  border-color: var(--accent-color);
-  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05); /* Very light glow */
-  outline: none;
 }
 
 @media (max-width: 480px) {
