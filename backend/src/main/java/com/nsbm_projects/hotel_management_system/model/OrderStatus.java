@@ -5,11 +5,7 @@ import lombok.Getter;
 
 @Getter
 public enum OrderStatus {
-    PENDING("Pending"),       // Order received, waiting for staff
-    PREPARING("Preparing"),   // Order is being worked on
-    DELIVERED("Delivered"),   // Order has reached the guest
-    COMPLETED("Completed"),   // Order is finished and billed
-    CANCELLED("Cancelled");   // Order was aborted
+    PENDING("Pending"), PREPARING("Preparing"), DELIVERED("Delivered"), COMPLETED("Completed"), CANCELLED("Cancelled");
 
     private final String displayValue;
 

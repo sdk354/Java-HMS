@@ -39,7 +39,6 @@
   margin-bottom: 2rem;
 }
 
-/* Animations */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -51,7 +50,6 @@
   }
 }
 
-/* Dark Mode Overrides (if applicable) */
 [data-theme="dark"] .unauthorized-content {
   background: #2a2d3e;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);

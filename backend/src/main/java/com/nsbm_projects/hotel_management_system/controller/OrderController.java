@@ -28,14 +28,12 @@ public class OrderController {
     @GetMapping("/status/{status}")
     @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
     public List<OrderResponse> getOrdersByStatus(@PathVariable String status) {
-        // Now passing a String directly to the service
         return orderService.getOrdersByStatus(status.toUpperCase());
     }
 
     @PatchMapping("/{id}/status")
     @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
     public void updateOrderStatus(@PathVariable Integer id, @RequestParam String status) {
-        // Now passing a String directly to the service
         orderService.updateOrderStatus(id, status.toUpperCase());
     }
 }

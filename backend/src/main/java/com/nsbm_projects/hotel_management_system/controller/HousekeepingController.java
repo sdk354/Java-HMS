@@ -31,27 +31,17 @@ public class HousekeepingController {
     @PreAuthorize("hasAnyAuthority('ROLE_HOUSEKEEPING', 'housekeeping', 'ROLE_ADMIN', 'admin')")
     public ResponseEntity<HousekeepingStatsDTO> getDashboardStats() {
 
-        // 1. Tasks use Strings (e.g., "Pending", "Completed")
         long pending = cleaningTaskRepository.countByStatus("Pending");
         long completed = cleaningTaskRepository.countByStatus("Completed");
 
-        // 2. Rooms use the RoomStatus Enum
-        // This will now compile because RoomRepository.countByStatus accepts RoomStatus
         long maintenance = roomRepository.countByStatus(RoomStatus.MAINTENANCE);
 
-        // 3. Staff count
         long staff = userRepository.countByRole("housekeeping");
 
-        // 4. Progress calculation
         long totalTasks = pending + completed;
         int progress = (totalTasks > 0) ? (int) ((completed * 100) / totalTasks) : 0;
 
-        HousekeepingStatsDTO stats = new HousekeepingStatsDTO(
-                pending,
-                maintenance,
-                staff,
-                progress
-        );
+        HousekeepingStatsDTO stats = new HousekeepingStatsDTO(pending, maintenance, staff, progress);
 
         return ResponseEntity.ok(stats);
     }

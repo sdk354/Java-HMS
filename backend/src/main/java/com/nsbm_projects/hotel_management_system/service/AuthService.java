@@ -22,19 +22,14 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
 
-    public AuthService(UserRepository userRepository,
-                       PasswordEncoder passwordEncoder,
-                       AuthenticationManager authenticationManager,
-                       JwtService jwtService) {
+    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtService jwtService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
     }
 
-    // ================= REGISTER =================
     public AuthResponse register(RegisterRequest request) {
-        // Validation: Prevent duplicate accounts
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new IllegalArgumentException("Username already taken");
         }
@@ -42,74 +37,40 @@ public class AuthService {
             throw new IllegalArgumentException("Email already registered");
         }
 
-        // Builder pattern to create a new User entity
-        User user = User.builder()
-                .username(request.getUsername())
-                .email(request.getEmail())
-                .fullName(request.getFullName())
-                .passwordHash(passwordEncoder.encode(request.getPassword()))
-                .role("guest") // Default role for web registration
-                .enabled(true)
-                .build();
+        User user = User.builder().username(request.getUsername()).email(request.getEmail()).fullName(request.getFullName()).passwordHash(passwordEncoder.encode(request.getPassword())).role("guest").enabled(true).build();
 
         userRepository.save(user);
 
-        // Directly log the user in by returning the token immediately after registration
         return generateAuthResponse(user);
     }
 
-    // ================= LOGIN =================
     public AuthResponse login(LoginRequest request) {
-        // Triggers Spring Security Authentication process
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getUsername(),
-                        request.getPassword()
-                )
-        );
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
 
-        User user = userRepository.findByUsername(request.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid credentials"));
+        User user = userRepository.findByUsername(request.getUsername()).orElseThrow(() -> new IllegalArgumentException("Invalid credentials"));
 
         return generateAuthResponse(user);
     }
 
-    // ================= GET CURRENT USER =================
     public AuthResponse getCurrentUserInfo() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
 
         return generateAuthResponse(user);
     }
 
-    /**
-     * Internal helper to build the response with JWT and Role mapping.
-     * This ensures the frontend receives the correct path strings for routing.
-     */
     private AuthResponse generateAuthResponse(User user) {
-        // 1. Prepare JWT Claims for the backend filter
         var claims = new HashMap<String, Object>();
         claims.put("role", user.getRole());
 
-        // 2. Generate token
         String token = jwtService.generateToken(user.getUsername(), claims);
 
-        // 3. Format Role for Frontend routing
-        // React Router usually expects lowercase roles (e.g., /guest/dashboard)
         String formattedRole = user.getRole().toLowerCase();
 
-        // Specific Mapping: If database says 'admin', React path expects 'administration'
         if (formattedRole.equals("admin")) {
             formattedRole = "administration";
         }
 
-        return AuthResponse.builder()
-                .token(token)
-                .tokenType("Bearer")
-                .role(formattedRole)
-                .fullName(user.getFullName())
-                .userID(user.getUserID())
-                .build();
+        return AuthResponse.builder().token(token).tokenType("Bearer").role(formattedRole).fullName(user.getFullName()).userID(user.getUserID()).build();
     }
 }

@@ -1,14 +1,12 @@
-import React, { useState, useEffect, useRef } from "react";
-import { NavLink, useNavigate, useLocation } from "react-router-dom";
+import React, {useState, useEffect, useRef} from "react";
+import {NavLink, useNavigate, useLocation} from "react-router-dom";
 import "./NavigationTabs.css";
 
-const NavigationTabs = ({ userRole }) => {
+const NavigationTabs = ({userRole}) => {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
 
-	// 1. Pull the source of truth from localStorage.
-	// This ensures that even if props lag, the UI shows the correct role.
 	const storageRole = localStorage.getItem("role")?.toLowerCase();
 	const activeRole = storageRole || userRole?.toLowerCase() || "guest";
 
@@ -16,34 +14,24 @@ const NavigationTabs = ({ userRole }) => {
 	const userInitials = userName.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2);
 
 	const navItems = {
-		manager: [
-			{ path: "/manager/dashboard", label: "Dashboard" },
-			{ path: "/manager/reservations", label: "Reservations" },
-			{ path: "/manager/rooms", label: "Rooms" },
-			{ path: "/manager/map", label: "Room Map" },
-		],
-		guest: [
-			{ path: "/guest/dashboard", label: "Dashboard" },
-			{ path: "/guest/rooms", label: "Rooms" },
-			{ path: "/guest/map", label: "Room Map" },
-			{ path: "/guest/book", label: "Book Room" },
-			{ path: "/guest/my-reservations", label: "My Bookings" },
-			{ path: "/guest/services", label: "Room Service" }
-		],
-		housekeeping: [
-			{ path: "/housekeeping/dashboard", label: "Dashboard" },
-			{ path: "/housekeeping/tasks", label: "My Tasks" },
-			{ path: "/housekeeping/map", label: "Room Map" },
-		],
-		admin: [
-			{ path: "/admin/dashboard", label: "Dashboard" },
-			{ path: "/admin/rooms", label: "Rooms" },
-			{ path: "/admin/map", label: "Room Map" },
-			{ path: "/admin/reservations", label: "Reservations" },
-			{ path: "/admin/tasks", label: "Cleaning" },
-			{ path: "/admin/pricing", label: "Pricing" },
-			{ path: "/admin/staff", label: "Staff" },
-		],
+		manager: [{path: "/manager/dashboard", label: "Dashboard"}, {
+			path: "/manager/reservations", label: "Reservations"
+		}, {path: "/manager/rooms", label: "Rooms"}, {path: "/manager/map", label: "Room Map"}],
+		guest: [{path: "/guest/dashboard", label: "Dashboard"}, {
+			path: "/guest/rooms", label: "Rooms"
+		}, {path: "/guest/map", label: "Room Map"}, {
+			path: "/guest/book", label: "Book Room"
+		}, {path: "/guest/my-reservations", label: "My Bookings"}, {path: "/guest/services", label: "Room Service"}],
+		housekeeping: [{path: "/housekeeping/dashboard", label: "Dashboard"}, {
+			path: "/housekeeping/tasks", label: "My Tasks"
+		}, {path: "/housekeeping/map", label: "Room Map"}],
+		admin: [{path: "/admin/dashboard", label: "Dashboard"}, {
+			path: "/admin/rooms", label: "Rooms"
+		}, {path: "/admin/map", label: "Room Map"}, {
+			path: "/admin/reservations", label: "Reservations"
+		}, {path: "/admin/tasks", label: "Cleaning"}, {path: "/admin/pricing", label: "Pricing"}, {
+			path: "/admin/staff", label: "Staff"
+		}]
 	};
 
 	const currentItems = navItems[activeRole] || [];
@@ -85,11 +73,6 @@ const NavigationTabs = ({ userRole }) => {
 		};
 	}, [location.pathname, navigate]);
 
-	/**
-	 * LOGOUT HANDLER
-	 * Clears all session data and forces a full browser reload to the login page.
-	 * This is the safest way to reset Axios headers and React state.
-	 */
 	const handleLogout = () => {
 		if (window.confirm("Are you sure you want to logout?")) {
 			localStorage.clear();
@@ -97,62 +80,54 @@ const NavigationTabs = ({ userRole }) => {
 		}
 	};
 
-	return (
-		<nav className="nav-wrapper">
-			<div className="nav-brand">
-				<span className="hotel-logo">GP</span>
-				<div className="brand-text">
-					<span className="hotel-name">Grand Plaza</span>
-					<span className="role-tag" style={{ color: 'var(--accent-color)' }}>
+	return (<nav className="nav-wrapper">
+		<div className="nav-brand">
+			<span className="hotel-logo">GP</span>
+			<div className="brand-text">
+				<span className="hotel-name">Grand Plaza</span>
+				<span className="role-tag" style={{color: 'var(--accent-color)'}}>
                    {activeRole === "admin" ? "ADMIN" : activeRole.toUpperCase()}
                 </span>
-				</div>
 			</div>
+		</div>
 
-			<div className="tab-container">
-				{visibleItems.map((item) => (
-					<NavLink
+		<div className="tab-container">
+			{visibleItems.map((item) => (<NavLink
+				key={item.path}
+				to={item.path}
+				className={({isActive}) => isActive ? "tab active" : "tab"}
+			>
+				{item.label}
+			</NavLink>))}
+
+			{hiddenItems.length > 0 && (<div className="tab more-trigger">
+				More ▾
+				<div className="more-dropdown">
+					{hiddenItems.map((item) => (<NavLink
 						key={item.path}
 						to={item.path}
-						className={({ isActive }) => isActive ? "tab active" : "tab"}
+						className={({isActive}) => isActive ? "more-item active" : "more-item"}
 					>
 						{item.label}
-					</NavLink>
-				))}
+					</NavLink>))}
+				</div>
+			</div>)}
+		</div>
 
-				{hiddenItems.length > 0 && (
-					<div className="tab more-trigger">
-						More ▾
-						<div className="more-dropdown">
-							{hiddenItems.map((item) => (
-								<NavLink
-									key={item.path}
-									to={item.path}
-									className={({ isActive }) => isActive ? "more-item active" : "more-item"}
-								>
-									{item.label}
-								</NavLink>
-							))}
-						</div>
-					</div>
-				)}
-			</div>
-
-			<div className="nav-utils">
-				<div className="user-profile-section">
-					<div className="user-info-text">
-						<span className="user-display-name">{userName}</span>
-						<button className="logout-inline-btn" onClick={handleLogout}>
-							LOGOUT
-						</button>
-					</div>
-					<div className="avatar-container">
-						<div className="avatar">{userInitials}</div>
-					</div>
+		<div className="nav-utils">
+			<div className="user-profile-section">
+				<div className="user-info-text">
+					<span className="user-display-name">{userName}</span>
+					<button className="logout-inline-btn" onClick={handleLogout}>
+						LOGOUT
+					</button>
+				</div>
+				<div className="avatar-container">
+					<div className="avatar">{userInitials}</div>
 				</div>
 			</div>
-		</nav>
-	);
+		</div>
+	</nav>);
 };
 
 export default NavigationTabs;

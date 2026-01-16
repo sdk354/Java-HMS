@@ -11,10 +11,8 @@ import java.time.Instant;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RoomStatusMessage {
-    // Changed to Integer to match the Room primary key
     private Integer roomNumber;
     private RoomStatus status;
 
-    // Helps the frontend handle message sequencing
     private Instant timestamp;
 }

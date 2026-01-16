@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.time.Instant;
 
 @Service
@@ -21,16 +22,13 @@ public class RoomStatusPublisher {
 
     public void publish(Room room) {
         try {
-            // Use the standardized Message POJO we updated earlier
             RoomStatusMessage message = new RoomStatusMessage(
-                    room.getRoomNumber(), // Integer
-                    room.getStatus(),
+                    room.getRoomNumber(), room.getStatus(),
                     Instant.now()
             );
 
             String jsonMessage = objectMapper.writeValueAsString(message);
 
-            // Publish to Redis Channel so all instances receive it
             redisTemplate.convertAndSend(REDIS_CHANNEL, jsonMessage);
 
             log.info("Published room status update to Redis for room: {}", room.getRoomNumber());

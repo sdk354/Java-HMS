@@ -1,6 +1,7 @@
 package com.nsbm_projects.hotel_management_system.dto;
 
 import lombok.Data;
+
 import java.math.BigDecimal;
 
 @Data

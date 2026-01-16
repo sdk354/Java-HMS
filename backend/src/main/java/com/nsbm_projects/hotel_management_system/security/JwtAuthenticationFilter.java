@@ -28,12 +28,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain chain)
-            throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
 
-        // 1. Skip CORS preflight
         if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
             chain.doFilter(request, response);
             return;
@@ -46,36 +42,26 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             try {
                 final String username = jwtService.extractUsername(token);
 
-                // Safely extract the role from the token
                 final String roleFromToken = jwtService.extractClaim(token, claims -> claims.get("role", String.class));
 
                 if (username != null && roleFromToken != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                     if (jwtService.isTokenValid(token, username)) {
 
-                        // We create a list of authorities to match both styles
                         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
 
-                        // 1. The Standard Spring Role (ROLE_ADMIN)
                         authorities.add(new SimpleGrantedAuthority("ROLE_" + roleFromToken.toUpperCase()));
 
-                        // 2. The Raw Role (admin) - matches your current SecurityConfig
                         authorities.add(new SimpleGrantedAuthority(roleFromToken.toLowerCase()));
 
-                        UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
-                                username,
-                                null,
-                                authorities
-                        );
+                        UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(username, null, authorities);
 
                         auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                         SecurityContextHolder.getContext().setAuthentication(auth);
 
-                        // Helpful for debugging in the console
                         System.out.println("Authenticated: " + username + " with authorities: " + authorities);
                     }
                 }
             } catch (Exception e) {
-                // Clear context if token is malformed or expired
                 SecurityContextHolder.clearContext();
                 System.err.println("JWT Authentication failed: " + e.getMessage());
             }

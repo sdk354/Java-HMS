@@ -12,12 +12,8 @@ import java.util.List;
 @Repository
 public interface PricingRepository extends JpaRepository<Pricing, Integer> {
 
-    @Query("SELECT p FROM Pricing p WHERE p.roomType.typeID = :roomTypeId " +
-            "AND :checkDate BETWEEN p.startDate AND p.endDate")
-    List<Pricing> findActiveRulesForRoomType(
-            @Param("roomTypeId") Integer roomTypeId,
-            @Param("checkDate") LocalDate checkDate
-    );
+    @Query("SELECT p FROM Pricing p WHERE p.roomType.typeID = :roomTypeId " + "AND :checkDate BETWEEN p.startDate AND p.endDate")
+    List<Pricing> findActiveRulesForRoomType(@Param("roomTypeId") Integer roomTypeId, @Param("checkDate") LocalDate checkDate);
 
     List<Pricing> findBySeasonNameContainingIgnoreCase(String seasonName);
 }

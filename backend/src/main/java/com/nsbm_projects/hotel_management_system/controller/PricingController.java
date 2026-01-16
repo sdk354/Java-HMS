@@ -28,34 +28,28 @@ public class PricingController {
 
     @PostMapping
     public Pricing createRule(@RequestBody Pricing pricing) {
-        // If frontend sends roomTypeID as a flat field, map it to the object
         if (pricing.getRoomType() == null && pricing.getRoomTypeID() != null) {
-            roomTypeRepository.findById(pricing.getRoomTypeID())
-                    .ifPresent(pricing::setRoomType);
+            roomTypeRepository.findById(pricing.getRoomTypeID()).ifPresent(pricing::setRoomType);
         }
         return repository.save(pricing);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Pricing> updateRule(@PathVariable Integer id, @RequestBody Pricing updatedDetails) {
-        return repository.findById(id)
-                .map(existingRule -> {
-                    existingRule.setSeasonName(updatedDetails.getSeasonName());
-                    existingRule.setStartDate(updatedDetails.getStartDate());
-                    existingRule.setEndDate(updatedDetails.getEndDate());
-                    existingRule.setPricingMultiplier(updatedDetails.getPricingMultiplier());
+        return repository.findById(id).map(existingRule -> {
+            existingRule.setSeasonName(updatedDetails.getSeasonName());
+            existingRule.setStartDate(updatedDetails.getStartDate());
+            existingRule.setEndDate(updatedDetails.getEndDate());
+            existingRule.setPricingMultiplier(updatedDetails.getPricingMultiplier());
 
-                    // Handle Relationship Mapping
-                    if (updatedDetails.getRoomType() != null) {
-                        existingRule.setRoomType(updatedDetails.getRoomType());
-                    } else if (updatedDetails.getRoomTypeID() != null) {
-                        roomTypeRepository.findById(updatedDetails.getRoomTypeID())
-                                .ifPresent(existingRule::setRoomType);
-                    }
+            if (updatedDetails.getRoomType() != null) {
+                existingRule.setRoomType(updatedDetails.getRoomType());
+            } else if (updatedDetails.getRoomTypeID() != null) {
+                roomTypeRepository.findById(updatedDetails.getRoomTypeID()).ifPresent(existingRule::setRoomType);
+            }
 
-                    return ResponseEntity.ok(repository.save(existingRule));
-                })
-                .orElse(ResponseEntity.notFound().build());
+            return ResponseEntity.ok(repository.save(existingRule));
+        }).orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")

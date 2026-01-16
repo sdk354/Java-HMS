@@ -29,9 +29,7 @@ public class RateLimitingFilter extends OncePerRequestFilter {
     @Value("${app.ratelimit.limit-per-minute:60}")
     private int limitPerMinute;
 
-    private static final DateTimeFormatter MINUTE_FMT =
-            DateTimeFormatter.ofPattern("yyyyMMddHHmm")
-                    .withZone(ZoneOffset.UTC);
+    private static final DateTimeFormatter MINUTE_FMT = DateTimeFormatter.ofPattern("yyyyMMddHHmm").withZone(ZoneOffset.UTC);
 
     public RateLimitingFilter(StringRedisTemplate redis) {
         this.redis = redis;
@@ -40,16 +38,11 @@ public class RateLimitingFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
-        // Skip auth & actuator endpoints
-        return path.startsWith("/api/auth/")
-                || path.startsWith("/actuator/");
+        return path.startsWith("/api/auth/") || path.startsWith("/actuator/");
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain)
-            throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         if (!enabled) {
             filterChain.doFilter(request, response);
@@ -71,8 +64,7 @@ public class RateLimitingFilter extends OncePerRequestFilter {
             if (count != null && count > limitPerMinute) {
                 response.setStatus(429);
                 response.setContentType("application/json");
-                response.getWriter()
-                        .write("{\"error\":\"Too many requests. Please try again later.\"}");
+                response.getWriter().write("{\"error\":\"Too many requests. Please try again later.\"}");
                 return;
             }
 

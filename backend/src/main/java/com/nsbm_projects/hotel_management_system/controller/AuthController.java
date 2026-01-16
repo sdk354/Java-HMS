@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
-// Updated to include common React (3000) and Vite (5173) dev ports alongside preview (4173)
 @CrossOrigin(origins = {"http://localhost:3000", "http://localhost:5173", "http://localhost:4173"})
 public class AuthController {
 
@@ -26,14 +25,14 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
-        // Returns AuthResponse containing token, role, fullName, and Integer id
+
         return ResponseEntity.ok(authService.login(request));
     }
 
     @GetMapping("/me")
     public ResponseEntity<?> getCurrentUser() {
-        // Updated to provide a hook for returning the full AuthResponse/Profile
-        // This is vital for the frontend to persist login state after a refresh.
+
+
         return ResponseEntity.ok(authService.getCurrentUserInfo());
     }
 }

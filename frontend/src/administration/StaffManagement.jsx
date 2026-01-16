@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import "./StaffManagement.css";
-import { FaUserPlus, FaShieldAlt, FaTrashAlt, FaUserEdit } from "react-icons/fa";
+import {FaUserPlus, FaShieldAlt, FaTrashAlt, FaUserEdit} from "react-icons/fa";
 import api from "../api/axios.js";
 
 const StaffManagement = () => {
@@ -10,12 +10,7 @@ const StaffManagement = () => {
 	const [isEditing, setIsEditing] = useState(false);
 
 	const [formData, setFormData] = useState({
-		userID: null,
-		username: "",
-		fullName: "",
-		email: "",
-		role: "housekeeping", // Default to a staff role
-		password: ""
+		userID: null, username: "", fullName: "", email: "", role: "housekeeping", password: ""
 	});
 
 	useEffect(() => {
@@ -27,11 +22,8 @@ const StaffManagement = () => {
 			setLoading(true);
 			const response = await api.get("/admin/users");
 
-			// Only show staff roles in the list; hide all guests
 			const staffRoles = ["admin", "manager", "housekeeping"];
-			const filteredStaff = response.data.filter(user =>
-				staffRoles.includes(user.role?.toLowerCase())
-			);
+			const filteredStaff = response.data.filter(user => staffRoles.includes(user.role?.toLowerCase()));
 
 			setStaff(filteredStaff);
 		} catch (err) {
@@ -43,7 +35,7 @@ const StaffManagement = () => {
 
 	const handleOpenCreate = () => {
 		setIsEditing(false);
-		setFormData({ username: "", fullName: "", email: "", role: "housekeeping", password: "" });
+		setFormData({username: "", fullName: "", email: "", role: "housekeeping", password: ""});
 		setShowModal(true);
 	};
 
@@ -54,7 +46,7 @@ const StaffManagement = () => {
 			username: member.username,
 			fullName: member.fullName,
 			email: member.email,
-			role: member.role.toLowerCase(), // Ensure lowercase for the select value
+			role: member.role.toLowerCase(),
 			password: ""
 		});
 		setShowModal(true);
@@ -89,8 +81,7 @@ const StaffManagement = () => {
 
 	if (loading) return <div className="manager-container">Loading Staff Directory...</div>;
 
-	return (
-		<div className="manager-container page-fade-in">
+	return (<div className="manager-container page-fade-in">
 			<header className="manager-header">
 				<div className="header-with-actions">
 					<div>
@@ -98,7 +89,7 @@ const StaffManagement = () => {
 						<p className="manager-welcome">Manage system access and roles for all hotel personnel</p>
 					</div>
 					<button className="admin-action-btn" onClick={handleOpenCreate}>
-						<FaUserPlus /> Add Staff Member
+						<FaUserPlus/> Add Staff Member
 					</button>
 				</div>
 			</header>
@@ -115,8 +106,7 @@ const StaffManagement = () => {
 					</tr>
 					</thead>
 					<tbody>
-					{staff.map((member) => (
-						<tr key={member.userID}>
+					{staff.map((member) => (<tr key={member.userID}>
 							<td className="staff-name-cell">
 								<div className="avatar-placeholder">
 									{member.fullName ? member.fullName.charAt(0) : "S"}
@@ -128,7 +118,7 @@ const StaffManagement = () => {
 							</td>
 							<td>
                         <span className={`role-badge ${member.role?.toLowerCase()}`}>
-                            <FaShieldAlt className="role-icon" /> {member.role}
+                            <FaShieldAlt className="role-icon"/> {member.role}
                         </span>
 							</td>
 							<td className="email-cell">{member.email}</td>
@@ -139,21 +129,18 @@ const StaffManagement = () => {
 							</td>
 							<td className="actions-cell">
 								<button className="icon-btn edit" onClick={() => handleOpenEdit(member)}>
-									<FaUserEdit />
+									<FaUserEdit/>
 								</button>
 								<button className="icon-btn delete" onClick={() => handleDelete(member.userID)}>
-									<FaTrashAlt />
+									<FaTrashAlt/>
 								</button>
 							</td>
-						</tr>
-					))}
+						</tr>))}
 					</tbody>
 				</table>
 			</div>
 
-			{/* Modal for Add/Edit */}
-			{showModal && (
-				<div className="modal-overlay" onClick={() => setShowModal(false)}>
+			{showModal && (<div className="modal-overlay" onClick={() => setShowModal(false)}>
 					<div className="modal-content glass-card" onClick={e => e.stopPropagation()}>
 						<h3 className="modal-title">{isEditing ? "Edit Staff Details" : "Register New Staff"}</h3>
 						<form onSubmit={handleSubmit}>
@@ -181,16 +168,14 @@ const StaffManagement = () => {
 									onChange={e => setFormData({...formData, email: e.target.value})}
 								/>
 							</div>
-							{!isEditing && (
-								<div className="form-group">
+							{!isEditing && (<div className="form-group">
 									<label>Initial Password</label>
 									<input
 										type="password" required
 										value={formData.password}
 										onChange={e => setFormData({...formData, password: e.target.value})}
 									/>
-								</div>
-							)}
+								</div>)}
 							<div className="form-group">
 								<label>Staff Role</label>
 								<select
@@ -204,17 +189,17 @@ const StaffManagement = () => {
 								</select>
 							</div>
 							<div className="modal-actions">
-								<button type="button" className="cancel-link" onClick={() => setShowModal(false)}>Cancel</button>
+								<button type="button" className="cancel-link"
+										onClick={() => setShowModal(false)}>Cancel
+								</button>
 								<button type="submit" className="admin-action-btn">
 									{isEditing ? "Update Staff" : "Create Staff"}
 								</button>
 							</div>
 						</form>
 					</div>
-				</div>
-			)}
-		</div>
-	);
+				</div>)}
+		</div>);
 };
 
 export default StaffManagement;

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, {useEffect, useState, useMemo} from 'react';
 import './AdminRooms.css';
 import api from "../api/axios.js";
 
@@ -8,18 +8,16 @@ const AdminRooms = () => {
 	const [selectedFloor, setSelectedFloor] = useState('All');
 	const [loading, setLoading] = useState(true);
 
-	// Modal State
 	const [editingRoom, setEditingRoom] = useState(null);
 
 	useEffect(() => {
 		fetchRooms();
 	}, []);
 
-	// TEST: Body Scroll Lock & Modal Mount Check
 	useEffect(() => {
 		if (editingRoom) {
 			console.log("TEST: Modal state is ACTIVE for room:", editingRoom.roomNumber);
-			document.body.style.overflow = 'hidden'; // Prevents background scroll
+			document.body.style.overflow = 'hidden';
 		} else {
 			document.body.style.overflow = 'unset';
 		}
@@ -45,9 +43,7 @@ const AdminRooms = () => {
 
 	const floors = useMemo(() => {
 		if (!rooms || rooms.length === 0) return ['All'];
-		const uniqueFloors = [
-			...new Set(rooms.map(room => getFloorFromRoom(room.roomNumber)))
-		].sort((a, b) => Number(a) - Number(b));
+		const uniqueFloors = [...new Set(rooms.map(room => getFloorFromRoom(room.roomNumber)))].sort((a, b) => Number(a) - Number(b));
 		return ['All', ...uniqueFloors];
 	}, [rooms]);
 
@@ -55,9 +51,7 @@ const AdminRooms = () => {
 		if (selectedFloor === 'All') {
 			setFilteredRooms(rooms);
 		} else {
-			setFilteredRooms(rooms.filter(room =>
-				getFloorFromRoom(room.roomNumber) === selectedFloor
-			));
+			setFilteredRooms(rooms.filter(room => getFloorFromRoom(room.roomNumber) === selectedFloor));
 		}
 	}, [selectedFloor, rooms]);
 
@@ -76,7 +70,7 @@ const AdminRooms = () => {
 
 	const toggleAvailability = async (room) => {
 		try {
-			const updatedRoom = { ...room, available: !room.available };
+			const updatedRoom = {...room, available: !room.available};
 			await api.put(`/rooms/${room.roomNumber}`, updatedRoom);
 			fetchRooms();
 		} catch (err) {
@@ -88,10 +82,10 @@ const AdminRooms = () => {
 		return isAvailable ? 'available' : 'occupied';
 	};
 
-	if (loading) return <div className="admin-rooms-container"><p className="loading-text">Loading inventory...</p></div>;
+	if (loading) return <div className="admin-rooms-container"><p className="loading-text">Loading inventory...</p>
+	</div>;
 
-	return (
-		<div className="admin-rooms-container">
+	return (<div className="admin-rooms-container">
 			<div className="admin-header-actions">
 				<div>
 					<h1 className="admin-title">Room Management</h1>
@@ -108,19 +102,16 @@ const AdminRooms = () => {
 							value={selectedFloor}
 							onChange={(e) => setSelectedFloor(e.target.value)}
 						>
-							{floors.map(floor => (
-								<option key={floor} value={floor}>
+							{floors.map(floor => (<option key={floor} value={floor}>
 									{floor === 'All' ? 'All Floors' : `Floor ${floor}`}
-								</option>
-							))}
+								</option>))}
 						</select>
 					</div>
 				</div>
 			</div>
 
 			<div className="rooms-grid">
-				{filteredRooms.map((room) => (
-					<div key={room.roomNumber} className="room-admin-card">
+				{filteredRooms.map((room) => (<div key={room.roomNumber} className="room-admin-card">
 						<div className="room-card-header">
 							<span className="room-number">Room {room.roomNumber}</span>
 							<span className={`status-badge ${getStatusClass(room.available)}`}>
@@ -157,13 +148,10 @@ const AdminRooms = () => {
 								{room.available ? 'Set Occupied' : 'Set Available'}
 							</button>
 						</div>
-					</div>
-				))}
+					</div>))}
 			</div>
 
-			{/* EDIT ROOM MODAL - Test this specifically */}
-			{editingRoom && (
-				<div
+			{editingRoom && (<div
 					className="modal-overlay"
 					style={{
 						position: 'fixed',
@@ -182,9 +170,15 @@ const AdminRooms = () => {
 					<div
 						className="modal-content glass-card"
 						onClick={(e) => e.stopPropagation()}
-						style={{ background: 'white', padding: '20px', borderRadius: '12px', minWidth: '400px', color: 'black' }}
+						style={{
+							background: 'white',
+							padding: '20px',
+							borderRadius: '12px',
+							minWidth: '400px',
+							color: 'black'
+						}}
 					>
-						<h3 className="admin-title" style={{ color: 'black' }}>Edit Room {editingRoom.roomNumber}</h3>
+						<h3 className="admin-title" style={{color: 'black'}}>Edit Room {editingRoom.roomNumber}</h3>
 						<form onSubmit={handleUpdateRoom}>
 							<div className="form-group">
 								<label className="filter-label">Room Type</label>
@@ -208,7 +202,9 @@ const AdminRooms = () => {
 								<label className="filter-label">Operational Status</label>
 								<select
 									value={editingRoom.available ? "true" : "false"}
-									onChange={(e) => setEditingRoom({...editingRoom, available: e.target.value === "true"})}
+									onChange={(e) => setEditingRoom({
+										...editingRoom, available: e.target.value === "true"
+									})}
 								>
 									<option value="true">Available</option>
 									<option value="false">Occupied / Out of Service</option>
@@ -216,15 +212,15 @@ const AdminRooms = () => {
 							</div>
 
 							<div className="modal-actions">
-								<button type="button" className="cancel-link" onClick={() => setEditingRoom(null)}>Cancel</button>
+								<button type="button" className="cancel-link"
+										onClick={() => setEditingRoom(null)}>Cancel
+								</button>
 								<button type="submit" className="admin-action-btn">Update Room</button>
 							</div>
 						</form>
 					</div>
-				</div>
-			)}
-		</div>
-	);
+				</div>)}
+		</div>);
 };
 
 export default AdminRooms;

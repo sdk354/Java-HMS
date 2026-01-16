@@ -5,10 +5,7 @@ import lombok.Getter;
 
 @Getter
 public enum RoomStatus {
-    AVAILABLE("Available"),
-    OCCUPIED("Booked"),
-    CLEANING("Cleaning"),
-    MAINTENANCE("Maintenance");
+    AVAILABLE("Available"), OCCUPIED("Booked"), CLEANING("Cleaning"), MAINTENANCE("Maintenance");
 
     private final String dbValue;
 
@@ -16,18 +13,17 @@ public enum RoomStatus {
         this.dbValue = dbValue;
     }
 
-    @JsonValue // Ensures the string is used in JSON responses
+    @JsonValue
     public String getDbValue() {
         return dbValue;
     }
 
-    // Helper to find Enum by string value
     public static RoomStatus fromDbValue(String value) {
         for (RoomStatus status : RoomStatus.values()) {
             if (status.dbValue.equalsIgnoreCase(value)) {
                 return status;
             }
         }
-        return AVAILABLE; // Fallback
+        return AVAILABLE;
     }
 }

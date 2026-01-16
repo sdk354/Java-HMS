@@ -10,7 +10,6 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderItemResponse {
-    // Changed from Long to Integer
     private Integer menuItemId;
     private String menuItemName;
     private int quantity;

@@ -15,17 +15,14 @@ public class BookingResponse {
     private Integer bookingId;
     private Integer guestId;
     private String guestName;
-    private Integer roomId;      // This acts as the unique room ID
-    private String roomNumber;   // This is the display number (e.g., "101")
+    private Integer roomId;
+    private String roomNumber;
     private LocalDate checkInDate;
     private LocalDate checkOutDate;
     private BookingStatus bookingStatus;
     private BigDecimal totalAmount;
 
-    // Fixed: The constructor now actually assigns the values
-    public BookingResponse(Integer bookingId, Integer guestId, String guestName, Integer roomId,
-                           LocalDate checkInDate, LocalDate checkOutDate,
-                           BookingStatus bookingStatus, BigDecimal totalAmount) {
+    public BookingResponse(Integer bookingId, Integer guestId, String guestName, Integer roomId, LocalDate checkInDate, LocalDate checkOutDate, BookingStatus bookingStatus, BigDecimal totalAmount) {
         this.bookingId = bookingId;
         this.guestId = guestId;
         this.guestName = guestName;

@@ -14,14 +14,11 @@ import java.util.stream.Collectors;
 public class OrderService {
 
     private final OrderRepository orderRepository;
-    private final ServiceItemRepository serviceItemRepository; // Renamed
+    private final ServiceItemRepository serviceItemRepository;
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
 
-    public OrderService(OrderRepository orderRepository,
-                        ServiceItemRepository serviceItemRepository,
-                        UserRepository userRepository,
-                        BookingRepository bookingRepository) {
+    public OrderService(OrderRepository orderRepository, ServiceItemRepository serviceItemRepository, UserRepository userRepository, BookingRepository bookingRepository) {
         this.orderRepository = orderRepository;
         this.serviceItemRepository = serviceItemRepository;
         this.userRepository = userRepository;
@@ -30,60 +27,31 @@ public class OrderService {
 
     @Transactional
     public OrderResponse placeOrder(PlaceOrderRequest request) {
-        // 1. Find the User
-        User user = userRepository.findById(request.getGuestId())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        User user = userRepository.findById(request.getGuestId()).orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        // 2. Find the active Booking (Reservation)
-        Booking booking = bookingRepository.findTopByGuest_User_UserIDOrderByCheckInDateDesc(user.getUserID())
-                .orElseThrow(() -> new IllegalStateException("No active reservation found for this guest"));
+        Booking booking = bookingRepository.findTopByGuest_User_UserIDOrderByCheckInDateDesc(user.getUserID()).orElseThrow(() -> new IllegalStateException("No active reservation found for this guest"));
 
-        // 3. Create the Order matching the ServiceOrder table (No Items table)
-        Order order = Order.builder()
-                .reservation(booking)
-                .status("PENDING")
-                .totalCost(request.getTotalCost()) // Using totalCost from DTO
-                .orderDate(LocalDateTime.now())
-                .build();
+        Order order = Order.builder().reservation(booking).status("PENDING").totalCost(request.getTotalCost()).orderDate(LocalDateTime.now()).build();
 
         Order saved = orderRepository.save(order);
 
-        // 4. Map to Response (Simplified: no nested OrderItemResponse list)
-        return new OrderResponse(
-                saved.getOrderID(),
-                user.getUserID(),
-                saved.getStatus(),
-                saved.getTotalCost(),
-                saved.getOrderDate(),
-                List.of() // Empty list since schema has no items table
-        );
+        return new OrderResponse(saved.getOrderID(), user.getUserID(), saved.getStatus(), saved.getTotalCost(), saved.getOrderDate(), List.of());
     }
 
     @Transactional(readOnly = true)
     public List<OrderResponse> getOrdersByStatus(String status) {
-        return orderRepository.findByStatus(status)
-                .stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
+        return orderRepository.findByStatus(status).stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 
     @Transactional
     public void updateOrderStatus(Integer orderId, String newStatus) {
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
 
         order.setStatus(newStatus);
         orderRepository.save(order);
     }
 
     private OrderResponse mapToResponse(Order order) {
-        return new OrderResponse(
-                order.getOrderID(),
-                order.getGuest() != null ? order.getGuest().getUser().getUserID() : null,
-                order.getStatus(),
-                order.getTotalCost(),
-                order.getOrderDate(),
-                List.of()
-        );
+        return new OrderResponse(order.getOrderID(), order.getGuest() != null ? order.getGuest().getUser().getUserID() : null, order.getStatus(), order.getTotalCost(), order.getOrderDate(), List.of());
     }
 }

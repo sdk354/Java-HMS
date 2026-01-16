@@ -21,13 +21,11 @@ public class PaymentService {
 
     @Transactional
     public PaymentResponse makePayment(PaymentRequest request) {
-        Booking booking = bookingRepository.findById(request.getBookingId())
-                .orElseThrow(() -> new IllegalArgumentException("Booking not found"));
+        Booking booking = bookingRepository.findById(request.getBookingId()).orElseThrow(() -> new IllegalArgumentException("Booking not found"));
 
         Payment payment = new Payment();
         payment.setBooking(booking);
-        payment.setAmount(request.getAmount()); // Uses helper in Payment.java
-
+        payment.setAmount(request.getAmount());
         try {
             payment.setMethod(PaymentMethod.valueOf(request.getMethod().toUpperCase()));
         } catch (IllegalArgumentException e) {
@@ -44,22 +42,12 @@ public class PaymentService {
     }
 
     public PaymentResponse getPaymentByBookingId(Integer bookingId) {
-        // Matches the method name in PaymentRepository
-        Payment payment = paymentRepository.findByBooking_ReservationID(bookingId)
-                .orElseThrow(() -> new RuntimeException("Payment record not found for this booking"));
+        Payment payment = paymentRepository.findByBooking_ReservationID(bookingId).orElseThrow(() -> new RuntimeException("Payment record not found for this booking"));
 
         return mapToResponse(payment);
     }
 
     private PaymentResponse mapToResponse(Payment payment) {
-        return new PaymentResponse(
-                payment.getBillID(),
-                payment.getBooking().getReservationID(),
-                payment.getAmount(), // Uses helper in Payment.java
-                payment.getMethod(),
-                payment.getStatus(),
-                // FIXED: Converts LocalDate to LocalDateTime to match DTO
-                payment.getCreatedAt() != null ? payment.getCreatedAt().atStartOfDay() : null
-        );
+        return new PaymentResponse(payment.getBillID(), payment.getBooking().getReservationID(), payment.getAmount(), payment.getMethod(), payment.getStatus(), payment.getCreatedAt() != null ? payment.getCreatedAt().atStartOfDay() : null);
     }
 }

@@ -7,9 +7,6 @@
   overflow: hidden;
 }
 
-/* ==========================================================================
-   SIDEBAR & INSPECTOR
-   ========================================================================== */
 .map-sidebar {
   background: var(--bg-secondary);
   border-right: 1px solid var(--border-color);
@@ -64,7 +61,6 @@
   box-shadow: 0 8px 20px rgba(var(--accent-rgb), 0.3);
 }
 
-/* Room Inspector Card */
 .room-inspector {
   background: #ffffff;
   padding: 1.8rem;
@@ -132,9 +128,6 @@
   font-weight: 500;
 }
 
-/* ==========================================================================
-   FORMS & ACTIONS
-   ========================================================================== */
 .inspector-form {
   display: flex;
   flex-direction: column;
@@ -220,9 +213,6 @@
   transform: none;
 }
 
-/* ==========================================================================
-   MAP VIEWPORT & BLUEPRINT
-   ========================================================================== */
 .map-viewport {
   padding: 3rem;
   display: flex;
@@ -238,7 +228,7 @@
   background: var(--bg-secondary);
   padding: 50px;
   border-radius: 32px;
-  box-shadow: 0 30px 60px rgba(0,0,0,0.2);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2);
   border: 1px solid var(--border-color);
   min-width: 700px;
   transition: all 0.5s ease;
@@ -273,9 +263,6 @@
   font-size: 0.8rem;
 }
 
-/* ==========================================================================
-   ROOM BLOCKS & STATUS (Updated Transparency)
-   ========================================================================== */
 .room-block {
   width: 110px;
   height: 120px;
@@ -291,10 +278,6 @@
   box-sizing: border-box;
 }
 
-/* UPDATED OPACITY:
-   Increased background opacity from 0.08 to 0.25 for better visibility
-   Cleaning (Orange) bumped to 0.3 to stand out against Red
-*/
 .room-block.available {
   border-color: #2e7d32;
   background: rgba(46, 125, 50, 0.25);
@@ -309,7 +292,7 @@
 
 .room-block.cleaning {
   border-color: #ef6c00;
-  background: rgba(239, 108, 0, 0.3); /* Slightly stronger orange */
+  background: rgba(239, 108, 0, 0.3);
   color: #e65100;
 }
 
@@ -323,7 +306,7 @@
   transform: translateY(-8px);
   filter: brightness(1.1);
   border-color: var(--accent-color);
-  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
 
 .room-block.selected {
@@ -331,7 +314,7 @@
   z-index: 10;
   background: var(--bg-primary);
   border-color: var(--accent-color);
-  box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
 }
 
 .room-label {
@@ -339,7 +322,6 @@
   font-size: 1.4rem;
 }
 
-/* Status Badges */
 .status-badge {
   padding: 4px 12px;
   border-radius: 20px;
@@ -349,14 +331,26 @@
   letter-spacing: 1px;
 }
 
-.status-badge.available { background: #e8f5e9; color: #1b5e20; }
-.status-badge.occupied { background: #ffebee; color: #b71c1c; }
-.status-badge.cleaning { background: #fff3e0; color: #e65100; }
-.status-badge.maintenance { background: #ede7f6; color: #4527a0; }
+.status-badge.available {
+  background: #e8f5e9;
+  color: #1b5e20;
+}
 
-/* ==========================================================================
-   LEGEND
-   ========================================================================== */
+.status-badge.occupied {
+  background: #ffebee;
+  color: #b71c1c;
+}
+
+.status-badge.cleaning {
+  background: #fff3e0;
+  color: #e65100;
+}
+
+.status-badge.maintenance {
+  background: #ede7f6;
+  color: #4527a0;
+}
+
 .map-legend-bottom {
   margin-top: 3rem;
   display: flex;
@@ -365,7 +359,7 @@
   background: var(--bg-secondary);
   border-radius: 50px;
   border: 1px solid var(--border-color);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
 .leg-item {
@@ -377,15 +371,41 @@
   color: var(--text-color);
 }
 
-.dot { width: 14px; height: 14px; border-radius: 50%; }
-.dot.available { background: #2e7d32; box-shadow: 0 0 10px rgba(46, 125, 50, 0.5); }
-.dot.occupied { background: #c62828; box-shadow: 0 0 10px rgba(198, 40, 40, 0.5); }
-.dot.cleaning { background: #ef6c00; box-shadow: 0 0 10px rgba(239, 108, 0, 0.5); }
-.dot.maintenance { background: #6a1b9a; box-shadow: 0 0 10px rgba(106, 27, 154, 0.5); }
+.dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+}
+
+.dot.available {
+  background: #2e7d32;
+  box-shadow: 0 0 10px rgba(46, 125, 50, 0.5);
+}
+
+.dot.occupied {
+  background: #c62828;
+  box-shadow: 0 0 10px rgba(198, 40, 40, 0.5);
+}
+
+.dot.cleaning {
+  background: #ef6c00;
+  box-shadow: 0 0 10px rgba(239, 108, 0, 0.5);
+}
+
+.dot.maintenance {
+  background: #6a1b9a;
+  box-shadow: 0 0 10px rgba(106, 27, 154, 0.5);
+}
 
 @keyframes slideIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .live-map-loading {

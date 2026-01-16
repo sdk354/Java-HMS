@@ -21,20 +21,14 @@ public class RedisPubSubConfig {
 
     @Bean
     public MessageListenerAdapter roomStatusListenerAdapter(RedisRoomStatusSubscriber subscriber) {
-        // subscriber must have handleMessage(String message)
         return new MessageListenerAdapter(subscriber, "handleMessage");
     }
 
     @Bean
-    public RedisMessageListenerContainer redisMessageListenerContainer(
-            RedisConnectionFactory connectionFactory,
-            MessageListenerAdapter roomStatusListenerAdapter,
-            ChannelTopic roomStatusTopic
-    ) {
+    public RedisMessageListenerContainer redisMessageListenerContainer(RedisConnectionFactory connectionFactory, MessageListenerAdapter roomStatusListenerAdapter, ChannelTopic roomStatusTopic) {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
 
-        // Subscribe to the channel and forward messages to WS clients
         container.addMessageListener(roomStatusListenerAdapter, roomStatusTopic);
         return container;
     }

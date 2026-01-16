@@ -3,6 +3,7 @@ package com.nsbm_projects.hotel_management_system.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import java.math.BigDecimal;
 
 @Data
@@ -15,5 +16,5 @@ public class RoomResponse {
     private BigDecimal price;
     private boolean available;
     private Integer capacity;
-    private String status; // <--- ADD THIS LINE
+    private String status;
 }

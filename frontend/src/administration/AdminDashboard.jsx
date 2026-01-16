@@ -1,18 +1,21 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import "./AdminDashboard.css";
-import { FaHotel, FaDollarSign, FaUserTie, FaTasks } from "react-icons/fa";
+import {FaHotel, FaDollarSign, FaUserTie, FaTasks} from "react-icons/fa";
 import {
 	AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from "recharts";
 import api from "../api/axios.js";
 
 const AdminDashboard = () => {
-	const [stats, setStats] = useState([
-		{ label: "Global Occupancy", value: "0%", icon: <FaHotel /> },
-		{ label: "Total Revenue", value: "$0", icon: <FaDollarSign /> },
-		{ label: "Active Staff", value: "0", icon: <FaUserTie /> },
-		{ label: "Outstanding Tasks", value: "0", icon: <FaTasks /> },
-	]);
+	const [stats, setStats] = useState([{
+		label: "Global Occupancy",
+		value: "0%",
+		icon: <FaHotel/>
+	}, {label: "Total Revenue", value: "$0", icon: <FaDollarSign/>}, {
+		label: "Active Staff",
+		value: "0",
+		icon: <FaUserTie/>
+	}, {label: "Outstanding Tasks", value: "0", icon: <FaTasks/>}]);
 
 	const [revenueData, setRevenueData] = useState([]);
 
@@ -22,12 +25,19 @@ const AdminDashboard = () => {
 				const response = await api.get("/admin/stats/summary");
 				const data = response.data;
 
-				setStats([
-					{ label: "Global Occupancy", value: data.occupancyRate || "0%", icon: <FaHotel /> },
-					{ label: "Total Revenue", value: data.totalRevenue || "$0", icon: <FaDollarSign /> },
-					{ label: "Active Staff", value: (data.activeStaff || 0).toString(), icon: <FaUserTie /> },
-					{ label: "Outstanding Tasks", value: (data.pendingTasks || 0).toString(), icon: <FaTasks /> },
-				]);
+				setStats([{
+					label: "Global Occupancy",
+					value: data.occupancyRate || "0%",
+					icon: <FaHotel/>
+				}, {
+					label: "Total Revenue",
+					value: data.totalRevenue || "$0",
+					icon: <FaDollarSign/>
+				}, {
+					label: "Active Staff",
+					value: (data.activeStaff || 0).toString(),
+					icon: <FaUserTie/>
+				}, {label: "Outstanding Tasks", value: (data.pendingTasks || 0).toString(), icon: <FaTasks/>}]);
 
 				setRevenueData(data.revenueHistory || []);
 
@@ -38,23 +48,20 @@ const AdminDashboard = () => {
 		fetchStats();
 	}, []);
 
-	return (
-		<div className="manager-container page-fade-in">
+	return (<div className="manager-container page-fade-in">
 			<header className="manager-header">
 				<h1 className="manager-title">Administration Dashboard</h1>
 				<p className="manager-welcome">Real-time financial and operational performance</p>
 			</header>
 
 			<div className="admin-stats-grid">
-				{stats.map((stat, index) => (
-					<div key={index} className="glass-card stat-card">
+				{stats.map((stat, index) => (<div key={index} className="glass-card stat-card">
 						<div className="stat-icon-wrapper">{stat.icon}</div>
 						<div className="stat-card-content">
 							<span className="stat-label">{stat.label}</span>
 							<span className="stat-value">{stat.value}</span>
 						</div>
-					</div>
-				))}
+					</div>))}
 			</div>
 
 			<div className="dashboard-lower-section full-width">
@@ -75,7 +82,7 @@ const AdminDashboard = () => {
 										<stop offset="95%" stopColor="#ef4444" stopOpacity={0}/>
 									</linearGradient>
 								</defs>
-								<CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />
+								<CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)"/>
 								<XAxis
 									dataKey="month"
 									axisLine={false}
@@ -109,8 +116,7 @@ const AdminDashboard = () => {
 					</div>
 				</div>
 			</div>
-		</div>
-	);
+		</div>);
 };
 
 export default AdminDashboard;

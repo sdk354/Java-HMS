@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-// FIX: Changed to /api/service-items to match your SecurityConfig and Frontend calls
 @RequestMapping("/api/service-items")
 @CrossOrigin(origins = {"http://localhost:3000", "http://localhost:5173", "http://localhost:4173"})
 public class ServiceItemController {
@@ -20,7 +19,6 @@ public class ServiceItemController {
         this.serviceItemService = serviceItemService;
     }
 
-    // Unlocked for GUEST to allow room service viewing
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'GUEST', 'MANAGER')")
     public List<MenuItemResponse> getAll() {

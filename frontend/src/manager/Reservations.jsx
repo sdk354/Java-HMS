@@ -7,12 +7,10 @@ const Reservations = () => {
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
 
-	// Modal State
-	const [isEditing, setIsEditing] = useState(false);
+		const [isEditing, setIsEditing] = useState(false);
 	const [currentBooking, setCurrentBooking] = useState(null);
 
-	// Matches your Java Enum: BookingStatus
-	const statusOptions = ["PENDING", "CONFIRMED", "CHECKED_IN", "CHECKED_OUT", "CANCELLED"];
+		const statusOptions = ["PENDING", "CONFIRMED", "CHECKED_IN", "CHECKED_OUT", "CANCELLED"];
 
 	useEffect(() => {
 		fetchReservations();
@@ -42,16 +40,14 @@ const Reservations = () => {
 	};
 
 	const openEditModal = (booking) => {
-		// Create a copy to edit in the modal
-		setCurrentBooking({ ...booking });
+				setCurrentBooking({ ...booking });
 		setIsEditing(true);
 	};
 
 	const handleUpdateBooking = async (e) => {
 		e.preventDefault();
 		try {
-			// Sends the data matching your updated BookingRequest DTO
-			await api.put(`/bookings/${currentBooking.bookingId}`, {
+						await api.put(`/bookings/${currentBooking.bookingId}`, {
 				guestId: currentBooking.guestId,
 				roomId: currentBooking.roomId,
 				checkInDate: currentBooking.checkInDate,
@@ -138,7 +134,6 @@ const Reservations = () => {
 				))}
 			</div>
 
-			{/* Edit Modal Overlay */}
 			{isEditing && currentBooking && (
 				<div className="modal-overlay">
 					<div className="glass-card modal-content">

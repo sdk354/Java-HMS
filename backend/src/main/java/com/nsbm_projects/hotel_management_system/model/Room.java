@@ -5,9 +5,11 @@ import lombok.*;
 
 @Entity
 @Table(name = "Room")
-@Getter @Setter
-@NoArgsConstructor @AllArgsConstructor
-@Builder // Added builder for test support
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Room {
 
     @Id
@@ -18,8 +20,7 @@ public class Room {
     @JoinColumn(name = "roomTypeID", nullable = false)
     private RoomType roomType;
 
-    // REMOVED: @Enumerated(EnumType.STRING)
-    @Convert(converter = RoomStatusConverter.class) // Uses our custom mapping logic
+    @Convert(converter = RoomStatusConverter.class)
     @Column(name = "status", nullable = false, length = 50)
     private RoomStatus status = RoomStatus.AVAILABLE;
 

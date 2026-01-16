@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import './RoomService.css';
 import api from "../api/axios.js";
 
@@ -8,17 +8,14 @@ const RoomService = () => {
 	const [loading, setLoading] = useState(true);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 
-	// Get current user from localStorage for the order context
 	const userString = localStorage.getItem("user");
 	const currentUser = userString ? JSON.parse(userString) : null;
 
 	useEffect(() => {
 		const fetchServices = async () => {
 			try {
-				// Matches ServiceItemController @RequestMapping("/api/service-items")
 				const response = await api.get('/service-items');
 
-				// Filtering based on your backend 'available' boolean
 				const available = response.data.filter(item => item.available === true);
 				setMenuItems(available);
 			} catch (err) {
@@ -35,9 +32,9 @@ const RoomService = () => {
 		setCart(prev => {
 			const existing = prev.find(i => i.itemID === item.itemID);
 			if (existing) {
-				return prev.map(i => i.itemID === item.itemID ? { ...i, qty: i.qty + 1 } : i);
+				return prev.map(i => i.itemID === item.itemID ? {...i, qty: i.qty + 1} : i);
 			}
-			return [...prev, { ...item, qty: 1 }];
+			return [...prev, {...item, qty: 1}];
 		});
 	};
 
@@ -47,7 +44,6 @@ const RoomService = () => {
 
 	const totalCost = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
 
-	// ================= SUBMIT ORDER LOGIC =================
 	const handlePlaceOrder = async () => {
 		if (cart.length === 0) return;
 
@@ -58,25 +54,19 @@ const RoomService = () => {
 
 		setIsSubmitting(true);
 		try {
-			/** * PAYLOAD ADJUSTMENT:
-			 * Matches your OrderController @PostMapping and PlaceOrderRequest DTO
-			 * URL: /api/orders
-			 */
 			const orderPayload = {
 				guestId: currentUser.userID,
 				items: cart.map(item => ({
-					serviceItemId: item.itemID, // Note: camelCase serviceItemId
-					quantity: item.qty
+					serviceItemId: item.itemID, quantity: item.qty
 				})),
 				totalPrice: totalCost
 			};
 
-			// CORRECTED PATH: /orders (Matches your OrderController)
 			const response = await api.post('/orders', orderPayload);
 
 			if (response.status === 200 || response.status === 201) {
 				alert("Order placed successfully! Your items are on the way.");
-				setCart([]); // Clear the cart
+				setCart([]);
 			}
 		} catch (err) {
 			console.error("Order Submission Error:", err);
@@ -118,7 +108,6 @@ const RoomService = () => {
 					</div>
 				</div>
 
-				{/* Sidebar Cart */}
 				<div className="cart-sidebar glass-card">
 					<h3 className="text-xl font-bold mb-4">Your Order</h3>
 					{cart.length === 0 ? (
@@ -137,7 +126,12 @@ const RoomService = () => {
 											<button
 												onClick={() => removeFromCart(i.itemID)}
 												className="text-red-400 ml-2 font-bold"
-												style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.2rem'}}
+												style={{
+													background: 'none',
+													border: 'none',
+													cursor: 'pointer',
+													fontSize: '1.2rem'
+												}}
 											>
 												×
 											</button>
@@ -145,7 +139,11 @@ const RoomService = () => {
 									</div>
 								))}
 							</div>
-							<div className="cart-total" style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '10px', marginTop: '10px' }}>
+							<div className="cart-total" style={{
+								borderTop: '1px solid rgba(255,255,255,0.1)',
+								paddingTop: '10px',
+								marginTop: '10px'
+							}}>
 								<strong>Total: LKR {totalCost.toLocaleString()}</strong>
 							</div>
 							<button

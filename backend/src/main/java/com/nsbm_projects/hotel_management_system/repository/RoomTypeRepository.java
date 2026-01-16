@@ -8,7 +8,5 @@ import java.util.Optional;
 
 @Repository
 public interface RoomTypeRepository extends JpaRepository<RoomType, Integer> {
-
-    // Helper to find a room type by its name (e.g., 'Deluxe')
     Optional<RoomType> findByTypeName(String typeName);
 }

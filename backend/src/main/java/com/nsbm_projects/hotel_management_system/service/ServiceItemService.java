@@ -18,23 +18,15 @@ public class ServiceItemService {
         this.serviceItemRepository = serviceItemRepository;
     }
 
-    // ================= CREATE =================
     public MenuItemResponse create(MenuItemRequest request) {
-        ServiceItem item = ServiceItem.builder()
-                .itemName(request.getName())
-                .category(request.getCategory())
-                .unitPrice(request.getPrice())
-                .availability(request.isAvailable() ? "Available" : "OutOfStock")
-                .build();
+        ServiceItem item = ServiceItem.builder().itemName(request.getName()).category(request.getCategory()).unitPrice(request.getPrice()).availability(request.isAvailable() ? "Available" : "OutOfStock").build();
 
         ServiceItem saved = serviceItemRepository.save(item);
         return mapToResponse(saved);
     }
 
-    // ================= UPDATE =================
     public MenuItemResponse update(Integer id, MenuItemRequest request) {
-        ServiceItem item = serviceItemRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Service item not found"));
+        ServiceItem item = serviceItemRepository.findById(id).orElseThrow(() -> new RuntimeException("Service item not found"));
 
         item.setItemName(request.getName());
         item.setCategory(request.getCategory());
@@ -44,7 +36,6 @@ public class ServiceItemService {
         return mapToResponse(serviceItemRepository.save(item));
     }
 
-    // ================= DELETE =================
     public void delete(Integer id) {
         if (!serviceItemRepository.existsById(id)) {
             throw new RuntimeException("Cannot delete: Service item not found");
@@ -52,29 +43,15 @@ public class ServiceItemService {
         serviceItemRepository.deleteById(id);
     }
 
-    // ================= GET ALL =================
     public List<MenuItemResponse> getAll() {
-        return serviceItemRepository.findAll()
-                .stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
+        return serviceItemRepository.findAll().stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 
-    // ================= GET AVAILABLE =================
     public List<MenuItemResponse> getAvailable() {
-        return serviceItemRepository.findByAvailabilityTrue()
-                .stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
+        return serviceItemRepository.findByAvailabilityTrue().stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 
     private MenuItemResponse mapToResponse(ServiceItem item) {
-        return new MenuItemResponse(
-                item.getItemID(),
-                item.getItemName(),
-                item.getCategory(),
-                item.getUnitPrice(),
-                "Available".equalsIgnoreCase(item.getAvailability())
-        );
+        return new MenuItemResponse(item.getItemID(), item.getItemName(), item.getCategory(), item.getUnitPrice(), "Available".equalsIgnoreCase(item.getAvailability()));
     }
 }

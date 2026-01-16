@@ -5,7 +5,6 @@
   min-height: 90vh;
 }
 
-/* 1. The main layout: Left Menu, Right Cart */
 .service-layout {
   display: grid;
   grid-template-columns: 1fr 350px;
@@ -13,7 +12,6 @@
   align-items: start;
 }
 
-/* 2. Menu Grid */
 .service-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -59,7 +57,6 @@
 .service-price {
   font-weight: 700;
   font-size: 1.1rem;
-  /* Use variable to adapt to light/dark mode automatically */
   color: var(--text-color);
 }
 
@@ -78,7 +75,6 @@
   opacity: 0.8;
 }
 
-/* 3. Sidebar Cart Styling */
 .cart-sidebar {
   position: sticky;
   top: 100px;
@@ -89,7 +85,6 @@
   border-top: 5px solid var(--accent-color);
 }
 
-/* FIX: Specific override for the Place Order button to prevent Red in Light Mode */
 .cart-sidebar .button-accent {
   background-color: var(--accent-color) !important;
   color: white !important;
@@ -102,7 +97,6 @@
 }
 
 .cart-sidebar .button-accent:hover {
-  /* This prevents the global 'red' hover color */
   filter: brightness(1.1);
   transform: translateY(-2px);
   background-color: var(--accent-color) !important;
@@ -121,11 +115,10 @@
   justify-content: space-between;
   align-items: center;
   padding: 12px 0;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1); /* Darker line for light mode */
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   font-size: 0.95rem;
 }
 
-/* Remove 'X' button styling */
 .remove-btn {
   background: none;
   border: none;
@@ -166,11 +159,11 @@
   color: var(--accent-color);
 }
 
-/* Mobile Responsiveness */
 @media (max-width: 950px) {
   .service-layout {
     grid-template-columns: 1fr;
   }
+
   .cart-sidebar {
     position: static;
     margin-top: 2rem;

@@ -1,10 +1,18 @@
-/* ==========================================================================
-   STATUS COLORS & DOTS
-   ========================================================================== */
-.available { color: #2ecc71 !important; }
-.occupied { color: #e74c3c !important; }
-.cleaning { color: #f1c40f !important; }
-.maintenance { color: #9b59b6 !important; }
+.available {
+  color: #2ecc71 !important;
+}
+
+.occupied {
+  color: #e74c3c !important;
+}
+
+.cleaning {
+  color: #f1c40f !important;
+}
+
+.maintenance {
+  color: #9b59b6 !important;
+}
 
 .status-dot {
   width: 10px;
@@ -14,14 +22,26 @@
   transition: all 0.3s ease;
 }
 
-.status-dot.available { background-color: #2ecc71; box-shadow: 0 0 10px rgba(46, 204, 113, 0.5); }
-.status-dot.occupied { background-color: #e74c3c; box-shadow: 0 0 10px rgba(231, 76, 60, 0.5); }
-.status-dot.cleaning { background-color: #f1c40f; box-shadow: 0 0 10px rgba(241, 196, 15, 0.5); }
-.status-dot.maintenance { background-color: #9b59b6; box-shadow: 0 0 10px rgba(155, 89, 182, 0.5); }
+.status-dot.available {
+  background-color: #2ecc71;
+  box-shadow: 0 0 10px rgba(46, 204, 113, 0.5);
+}
 
-/* ==========================================================================
-   HEADER & SEARCH BAR
-   ========================================================================== */
+.status-dot.occupied {
+  background-color: #e74c3c;
+  box-shadow: 0 0 10px rgba(231, 76, 60, 0.5);
+}
+
+.status-dot.cleaning {
+  background-color: #f1c40f;
+  box-shadow: 0 0 10px rgba(241, 196, 15, 0.5);
+}
+
+.status-dot.maintenance {
+  background-color: #9b59b6;
+  box-shadow: 0 0 10px rgba(155, 89, 182, 0.5);
+}
+
 .manager-header {
   margin-bottom: 2.5rem;
   width: 100%;
@@ -67,9 +87,6 @@
   opacity: 0.6;
 }
 
-/* ==========================================================================
-   ROOM CARDS GRID
-   ========================================================================== */
 .rooms-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -111,7 +128,6 @@
   color: var(--text-secondary);
 }
 
-/* Typography */
 .room-number {
   font-size: 1.8rem;
   font-weight: 800;
@@ -125,7 +141,6 @@
   margin-top: 0.2rem;
 }
 
-/* Statistics Section */
 .room-stats {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -157,7 +172,6 @@
   margin-top: 4px;
 }
 
-/* Footer Section */
 .room-footer {
   display: flex;
   justify-content: space-between;
@@ -189,9 +203,6 @@
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
-/* ==========================================================================
-   MODAL STYLING
-   ========================================================================== */
 .modal-overlay {
   position: fixed;
   inset: 0;

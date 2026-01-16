@@ -3,13 +3,13 @@ package com.nsbm_projects.hotel_management_system.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import java.math.BigDecimal;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class MenuItemResponse {
-    // Changed from Long to Integer to match the DB Primary Key (itemID)
     private Integer itemID;
     private String name;
     private String category;

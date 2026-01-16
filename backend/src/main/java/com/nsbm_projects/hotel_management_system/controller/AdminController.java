@@ -10,7 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin/users")
-@PreAuthorize("hasAuthority('admin')") // Protect the entire controller
+@PreAuthorize("hasAuthority('admin')")
 public class AdminController {
 
     private final UserRepository userRepository;
@@ -26,14 +26,12 @@ public class AdminController {
 
     @PutMapping("/{id}")
     public ResponseEntity<User> updateUser(@PathVariable Integer id, @RequestBody User userDetails) {
-        return userRepository.findById(id)
-                .map(user -> {
-                    user.setFullName(userDetails.getFullName());
-                    user.setEmail(userDetails.getEmail());
-                    user.setRole(userDetails.getRole());
-                    return ResponseEntity.ok(userRepository.save(user));
-                })
-                .orElse(ResponseEntity.notFound().build());
+        return userRepository.findById(id).map(user -> {
+            user.setFullName(userDetails.getFullName());
+            user.setEmail(userDetails.getEmail());
+            user.setRole(userDetails.getRole());
+            return ResponseEntity.ok(userRepository.save(user));
+        }).orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")

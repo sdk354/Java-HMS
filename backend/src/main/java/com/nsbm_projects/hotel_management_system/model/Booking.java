@@ -34,7 +34,6 @@ public class Booking {
     @Column(name = "checkOutDate", nullable = false)
     private LocalDate checkOutDate;
 
-    // FIX: Remove @Enumerated and use @Convert
     @Convert(converter = BookingStatusConverter.class)
     @Column(name = "bookingStatus", nullable = false)
     private BookingStatus bookingStatus;

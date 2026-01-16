@@ -1,4 +1,3 @@
-/* DynamicPricing.css */
 
 .pricing-content-grid {
   display: grid;
@@ -20,7 +19,6 @@
   color: var(--text-color);
 }
 
-/* Rule Items */
 .rules-list {
   display: flex;
   flex-direction: column;
@@ -66,7 +64,6 @@
   margin-top: 5px;
 }
 
-/* Action Group Styling */
 .rule-impact-group {
   display: flex;
   align-items: center;
@@ -120,7 +117,6 @@
   color: white;
 }
 
-/* Calculator Preview */
 .calc-preview {
   display: flex;
   flex-direction: column;
@@ -153,7 +149,6 @@
   font-style: italic;
 }
 
-/* Modal Enhancements */
 .modal-actions {
   display: flex;
   justify-content: flex-end;

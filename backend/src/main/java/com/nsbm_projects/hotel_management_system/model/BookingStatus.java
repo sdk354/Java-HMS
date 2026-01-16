@@ -4,11 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum BookingStatus {
-    CONFIRMED("Confirmed"),
-    CANCELLED("Cancelled"),
-    PENDING("Pending"),
-    CHECKED_IN("Checked-In"),
-    CHECKED_OUT("Checked-Out");
+    CONFIRMED("Confirmed"), CANCELLED("Cancelled"), PENDING("Pending"), CHECKED_IN("Checked-In"), CHECKED_OUT("Checked-Out");
 
     private final String dbValue;
 
@@ -22,6 +18,6 @@ public enum BookingStatus {
                 return status;
             }
         }
-        return PENDING; // Default fallback
+        return PENDING;
     }
 }

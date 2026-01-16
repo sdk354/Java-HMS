@@ -19,7 +19,6 @@ public class AuthResponse {
     private String role;
     private String fullName;
 
-    // This ensures the JSON sent to React is {"id": ...} instead of {"userID": ...}
     @JsonProperty("id")
     private Integer userID;
 }

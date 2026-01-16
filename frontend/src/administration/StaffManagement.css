@@ -1,9 +1,8 @@
-/* StaffManagement.css */
 
 .glass-card.staff-card {
-  padding: 2.5rem !important; /* Enforce global padding consistency */
+  padding: 2.5rem !important;
   margin-top: 2rem;
-  overflow-x: auto; /* Handle smaller screens gracefully */
+  overflow-x: auto;
 }
 
 .staff-table {
@@ -28,7 +27,6 @@
   vertical-align: middle;
 }
 
-/* Name and Avatar Styling */
 .staff-name-cell {
   display: flex;
   align-items: center;
@@ -48,7 +46,6 @@
   font-weight: 800;
 }
 
-/* Role Badges */
 .role-badge {
   padding: 6px 12px;
   border-radius: 8px;
@@ -59,11 +56,21 @@
   gap: 6px;
 }
 
-.role-badge.administration { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
-.role-badge.manager { background: rgba(242, 140, 56, 0.1); color: #f28c38; }
-.role-badge.housekeeping { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+.role-badge.administration {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
 
-/* Status Indicators */
+.role-badge.manager {
+  background: rgba(242, 140, 56, 0.1);
+  color: #f28c38;
+}
+
+.role-badge.housekeeping {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+}
+
 .status-indicator {
   font-size: 0.8rem;
   display: flex;
@@ -78,10 +85,14 @@
   border-radius: 50%;
 }
 
-.status-indicator.active::before { background: #10b981; }
-.status-indicator.on-leave::before { background: #f28c38; }
+.status-indicator.active::before {
+  background: #10b981;
+}
 
-/* Action Buttons */
+.status-indicator.on-leave::before {
+  background: #f28c38;
+}
+
 .actions-cell {
   display: flex;
   gap: 10px;
@@ -96,8 +107,13 @@
   transition: opacity 0.2s, transform 0.1s;
 }
 
-.icon-btn.edit { color: #64748b; }
-.icon-btn.delete { color: #ef4444; }
+.icon-btn.edit {
+  color: #64748b;
+}
+
+.icon-btn.delete {
+  color: #ef4444;
+}
 
 .icon-btn:hover {
   opacity: 0.7;

@@ -19,9 +19,7 @@ public class CleaningTaskController {
     private final UserRepository userRepository;
     private final RoomRepository roomRepository;
 
-    public CleaningTaskController(CleaningTaskRepository repository,
-                                  UserRepository userRepository,
-                                  RoomRepository roomRepository) {
+    public CleaningTaskController(CleaningTaskRepository repository, UserRepository userRepository, RoomRepository roomRepository) {
         this.repository = repository;
         this.userRepository = userRepository;
         this.roomRepository = roomRepository;
@@ -42,7 +40,6 @@ public class CleaningTaskController {
     @PostMapping
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'admin', 'ROLE_MANAGER', 'manager')")
     public ResponseEntity<?> createTask(@RequestBody CleaningTask task) {
-        // Find existing room and user to avoid detached entity errors
         if (task.getRoom() != null && task.getRoom().getRoomNumber() != null) {
             roomRepository.findById(task.getRoom().getRoomNumber()).ifPresent(task::setRoom);
         }

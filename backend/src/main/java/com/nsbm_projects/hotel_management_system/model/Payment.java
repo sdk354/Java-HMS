@@ -2,12 +2,14 @@ package com.nsbm_projects.hotel_management_system.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "Bill")
-@Getter @Setter
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -39,11 +41,11 @@ public class Payment {
     private BigDecimal grandTotal;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "paymentMethod") // MATCHES init.sql exactly (no underscore)
+    @Column(name = "paymentMethod")
     private PaymentMethod method;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "paymentStatus") // MATCHES init.sql exactly (no underscore)
+    @Column(name = "paymentStatus")
     private PaymentStatus status = PaymentStatus.PENDING;
 
     public void setAmount(BigDecimal amount) {

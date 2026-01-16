@@ -5,7 +5,6 @@
   min-height: 80vh;
 }
 
-/* Header Styling */
 .res-header-flex {
   display: flex;
   justify-content: space-between;
@@ -24,14 +23,12 @@
   font-weight: 600;
 }
 
-/* List Layout */
 .res-list {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
 }
 
-/* Individual Booking Card */
 .res-item {
   position: relative;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -53,7 +50,6 @@
   align-items: center;
 }
 
-/* Text Styling */
 .res-id {
   display: block;
   font-size: 0.7rem;
@@ -79,7 +75,6 @@
   gap: 8px;
 }
 
-/* Status Badges */
 .res-status-group {
   display: flex;
   flex-direction: column;
@@ -97,7 +92,6 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* Dynamic Status Colors */
 .status-badge.confirmed {
   background: #22c55e;
   color: #fff;
@@ -123,7 +117,6 @@
   color: #fff;
 }
 
-/* Pricing */
 .res-total {
   font-size: 1.25rem;
   font-weight: 800;
@@ -131,23 +124,26 @@
   font-family: 'Inter', sans-serif;
 }
 
-/* Empty State */
 .no-res {
   border: 2px dashed rgba(255, 255, 255, 0.1);
   background: transparent;
 }
 
-/* Animations */
 .page-fade-in {
   animation: fadeIn 0.5s ease-out;
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/* Mobile Responsiveness */
 @media (max-width: 600px) {
   .res-main {
     flex-direction: column;

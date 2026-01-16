@@ -30,9 +30,7 @@ public class SecurityConfig {
     private final UserRepository userRepository;
     private final RateLimitingFilter rateLimitingFilter;
 
-    public SecurityConfig(JwtService jwtService,
-                          UserRepository userRepository,
-                          RateLimitingFilter rateLimitingFilter) {
+    public SecurityConfig(JwtService jwtService, UserRepository userRepository, RateLimitingFilter rateLimitingFilter) {
         this.jwtService = jwtService;
         this.userRepository = userRepository;
         this.rateLimitingFilter = rateLimitingFilter;
@@ -40,8 +38,7 @@ public class SecurityConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return username -> userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+        return username -> userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
     }
 
     @Bean
@@ -61,32 +58,19 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(AbstractHttpConfigurer::disable)
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/api/auth/**").permitAll()
+        http.csrf(AbstractHttpConfigurer::disable).cors(cors -> cors.configurationSource(corsConfigurationSource())).sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll().requestMatchers("/api/auth/**").permitAll()
 
-                        .requestMatchers(HttpMethod.GET, "/api/rooms/**").authenticated()
+                .requestMatchers(HttpMethod.GET, "/api/rooms/**").authenticated()
 
-                        // FIXED: Added Manager authorities here
-                        .requestMatchers("/api/admin/**").hasAnyAuthority("ROLE_ADMIN", "admin", "ROLE_MANAGER", "manager")
+                .requestMatchers("/api/admin/**").hasAnyAuthority("ROLE_ADMIN", "admin", "ROLE_MANAGER", "manager")
 
-                        .requestMatchers(HttpMethod.GET, "/api/cleaning-tasks/**").hasAnyAuthority("ROLE_ADMIN", "admin", "ROLE_HOUSEKEEPING", "housekeeping")
-                        .requestMatchers(HttpMethod.PUT, "/api/cleaning-tasks/*/status").hasAnyAuthority("ROLE_ADMIN", "admin", "ROLE_HOUSEKEEPING", "housekeeping")
+                .requestMatchers(HttpMethod.GET, "/api/cleaning-tasks/**").hasAnyAuthority("ROLE_ADMIN", "admin", "ROLE_HOUSEKEEPING", "housekeeping").requestMatchers(HttpMethod.PUT, "/api/cleaning-tasks/*/status").hasAnyAuthority("ROLE_ADMIN", "admin", "ROLE_HOUSEKEEPING", "housekeeping")
 
-                        .requestMatchers(HttpMethod.POST, "/api/cleaning-tasks/**").hasAnyAuthority("ROLE_ADMIN", "admin")
-                        .requestMatchers(HttpMethod.PUT, "/api/cleaning-tasks/**").hasAnyAuthority("ROLE_ADMIN", "admin")
-                        .requestMatchers(HttpMethod.DELETE, "/api/cleaning-tasks/**").hasAnyAuthority("ROLE_ADMIN", "admin")
+                .requestMatchers(HttpMethod.POST, "/api/cleaning-tasks/**").hasAnyAuthority("ROLE_ADMIN", "admin").requestMatchers(HttpMethod.PUT, "/api/cleaning-tasks/**").hasAnyAuthority("ROLE_ADMIN", "admin").requestMatchers(HttpMethod.DELETE, "/api/cleaning-tasks/**").hasAnyAuthority("ROLE_ADMIN", "admin")
 
-                        .requestMatchers("/api/housekeeping/**").hasAnyAuthority("ROLE_HOUSEKEEPING", "housekeeping", "ROLE_ADMIN", "admin")
+                .requestMatchers("/api/housekeeping/**").hasAnyAuthority("ROLE_HOUSEKEEPING", "housekeeping", "ROLE_ADMIN", "admin")
 
-                        .anyRequest().authenticated()
-                )
-                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-                .addFilterAfter(rateLimitingFilter, UsernamePasswordAuthenticationFilter.class);
+                .anyRequest().authenticated()).addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class).addFilterAfter(rateLimitingFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

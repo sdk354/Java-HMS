@@ -1,4 +1,3 @@
-/* Root Elements */
 html,
 body,
 #root {
@@ -10,7 +9,6 @@ body,
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Dark/Light Mode Slider */
 .theme-slider {
   position: fixed;
   bottom: 2rem;
@@ -91,7 +89,6 @@ body,
   background-color: #f9b17a;
 }
 
-/* App Layout */
 .auth-page {
   position: relative;
   display: flex;
@@ -155,27 +152,32 @@ body,
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/* Authentication Pages */
 .auth-page {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100dvh;
   background: linear-gradient(
-    135deg,
-    #f8fafc 0%,
-    #676f9d 40%,
-    #f28c38 100%);
+          135deg,
+          #f8fafc 0%,
+          #676f9d 40%,
+          #f28c38 100%);
 }
 
 .auth-card {
   background-color: var(--card-bg);
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   padding: 2rem;
   width: 100%;
   max-width: 400px;
@@ -224,7 +226,6 @@ body,
   outline: none;
 }
 
-/* Buttons */
 .button-accent {
   background-color: var(--accent-color, #646cff);
   color: #fff;
@@ -235,13 +236,11 @@ body,
   font-weight: 600;
   cursor: pointer;
   width: 100%;
-  /* REMOVE: transition: background-color 0.3s ease; */
-  /* ADD: Only transition transform and shadow to prevent color flashing */
   transition: transform 0.1s ease, box-shadow 0.2s ease;
 }
 
 .button-accent:hover {
-  transition: background-color 0.2s ease; /* This makes it smooth only when the user hovers */
+  transition: background-color 0.2s ease;
   background-color: var(--button-hover, #535bf2);
   transform: translateY(-1px);
 }
@@ -250,7 +249,6 @@ body,
   transform: translateY(0);
 }
 
-/* Accent button */
 .button-accent {
   background-color: var(--button-bg);
   color: var(--button-text);
@@ -273,7 +271,6 @@ body,
   transform: translateY(0);
 }
 
-/* Register link */
 .register-link {
   color: var(--button-bg);
   font-weight: 500;
@@ -292,13 +289,11 @@ body,
   margin-top: 1rem;
 }
 
-/* Links */
 .register-link,
 .signup-link {
   color: var(--accent-color, #646cff);
   font-weight: 500;
   text-decoration: none;
-  /* REMOVE: transition: color 0.3s ease; */
   transition: opacity 0.2s ease;
 }
 
@@ -309,7 +304,6 @@ body,
   color: #535bf2;
 }
 
-/* Responsive Adjustments */
 @media (max-width: 480px) {
   .auth-card {
     padding: 1.5rem;

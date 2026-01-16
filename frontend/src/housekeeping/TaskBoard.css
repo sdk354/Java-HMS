@@ -26,7 +26,6 @@
   gap: 1.5rem;
 }
 
-/* Specificity fix: Combining classes and using !important to override global centering */
 .glass-card.task-item {
   display: flex !important;
   flex-direction: row !important;
@@ -43,7 +42,6 @@
   transform: translateX(8px);
 }
 
-/* Ensure the text group stays flush to the left */
 .task-info {
   display: flex !important;
   flex-direction: column !important;
@@ -72,11 +70,18 @@
   font-weight: 600;
 }
 
-.priority-tag.urgent { color: #ef4444; }
-.priority-tag.high { color: #f97316; }
-.priority-tag.medium { color: var(--accent-color); }
+.priority-tag.urgent {
+  color: #ef4444;
+}
 
-/* The button remains right-aligned due to justify-content: space-between above */
+.priority-tag.high {
+  color: #f97316;
+}
+
+.priority-tag.medium {
+  color: var(--accent-color);
+}
+
 .complete-btn {
   background: transparent;
   border: 2px solid var(--accent-color);
@@ -88,7 +93,7 @@
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
-  margin-left: 20px; /* Ensures a minimum gap from text on small screens */
+  margin-left: 20px;
 }
 
 .complete-btn:hover {

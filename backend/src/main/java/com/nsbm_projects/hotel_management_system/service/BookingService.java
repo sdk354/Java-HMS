@@ -24,14 +24,7 @@ public class BookingService {
     private final PricingRepository pricingRepository;
     private final RoomStatusPublisher roomStatusPublisher;
 
-    public BookingService(
-            BookingRepository bookingRepository,
-            RoomRepository roomRepository,
-            UserRepository userRepository,
-            GuestRepository guestRepository,
-            PricingRepository pricingRepository,
-            RoomStatusPublisher roomStatusPublisher
-    ) {
+    public BookingService(BookingRepository bookingRepository, RoomRepository roomRepository, UserRepository userRepository, GuestRepository guestRepository, PricingRepository pricingRepository, RoomStatusPublisher roomStatusPublisher) {
         this.bookingRepository = bookingRepository;
         this.roomRepository = roomRepository;
         this.userRepository = userRepository;
@@ -40,49 +33,23 @@ public class BookingService {
         this.roomStatusPublisher = roomStatusPublisher;
     }
 
-    /**
-     * NEW: Fetches all bookings for a specific Guest based on their User ID.
-     * This handles the React call: api.get("/bookings/guest/2")
-     */
     public List<BookingResponse> getBookingsByGuestId(Long userId) {
-        // 1. Find the guest profile associated with this User ID
-        Guest guest = guestRepository.findByUser_UserID(userId.intValue())
-                .orElseThrow(() -> new IllegalArgumentException("Guest profile not found for User ID: " + userId));
+        Guest guest = guestRepository.findByUser_UserID(userId.intValue()).orElseThrow(() -> new IllegalArgumentException("Guest profile not found for User ID: " + userId));
 
-        // 2. Fetch all bookings for that guest and map to responses
-        return bookingRepository.findAll().stream()
-                .filter(b -> b.getGuest() != null && b.getGuest().getGuestID().equals(guest.getGuestID()))
-                .sorted((b1, b2) -> b2.getCheckInDate().compareTo(b1.getCheckInDate())) // Newest first
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
+        return bookingRepository.findAll().stream().filter(b -> b.getGuest() != null && b.getGuest().getGuestID().equals(guest.getGuestID())).sorted((b1, b2) -> b2.getCheckInDate().compareTo(b1.getCheckInDate())).map(this::mapToResponse).collect(Collectors.toList());
     }
 
-    /**
-     * Finds the most relevant active booking for a guest based on their username.
-     * Matches the Guest Dashboard requirements.
-     */
     public Optional<BookingResponse> findActiveBookingByUsername(String username) {
-        return bookingRepository.findAll().stream()
-                .filter(b -> b.getGuest() != null &&
-                        b.getGuest().getUser() != null &&
-                        b.getGuest().getUser().getUsername().equals(username))
-                .filter(b -> b.getBookingStatus() == BookingStatus.CONFIRMED ||
-                        b.getBookingStatus() == BookingStatus.CHECKED_IN)
-                .sorted((b1, b2) -> b2.getCheckInDate().compareTo(b1.getCheckInDate()))
-                .map(this::mapToResponse)
-                .findFirst();
+        return bookingRepository.findAll().stream().filter(b -> b.getGuest() != null && b.getGuest().getUser() != null && b.getGuest().getUser().getUsername().equals(username)).filter(b -> b.getBookingStatus() == BookingStatus.CONFIRMED || b.getBookingStatus() == BookingStatus.CHECKED_IN).sorted((b1, b2) -> b2.getCheckInDate().compareTo(b1.getCheckInDate())).map(this::mapToResponse).findFirst();
     }
 
     @Transactional
     public BookingResponse createBooking(BookingRequest request) {
-        Room room = roomRepository.findById(request.getRoomId())
-                .orElseThrow(() -> new IllegalArgumentException("Room not found"));
+        Room room = roomRepository.findById(request.getRoomId()).orElseThrow(() -> new IllegalArgumentException("Room not found"));
 
-        User user = userRepository.findById(request.getGuestId())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        User user = userRepository.findById(request.getGuestId()).orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        Guest guest = guestRepository.findByUser_UserID(user.getUserID())
-                .orElseThrow(() -> new IllegalArgumentException("User does not have a Guest profile"));
+        Guest guest = guestRepository.findByUser_UserID(user.getUserID()).orElseThrow(() -> new IllegalArgumentException("User does not have a Guest profile"));
 
         validateDates(request);
         checkAvailability(room.getRoomNumber(), request, null);
@@ -102,11 +69,9 @@ public class BookingService {
 
     @Transactional
     public BookingResponse updateBooking(Integer id, BookingRequest request) {
-        Booking booking = bookingRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Booking not found with ID: " + id));
+        Booking booking = bookingRepository.findById(id).orElseThrow(() -> new RuntimeException("Booking not found with ID: " + id));
 
-        Room room = roomRepository.findById(request.getRoomId())
-                .orElseThrow(() -> new IllegalArgumentException("Room not found"));
+        Room room = roomRepository.findById(request.getRoomId()).orElseThrow(() -> new IllegalArgumentException("Room not found"));
 
         validateDates(request);
         checkAvailability(room.getRoomNumber(), request, id);
@@ -134,16 +99,12 @@ public class BookingService {
     }
 
     public List<BookingResponse> getAllBookings() {
-        return bookingRepository.findAll()
-                .stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
+        return bookingRepository.findAll().stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 
     @Transactional
     public void checkIn(Integer bookingId) {
-        Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new RuntimeException("Booking not found"));
+        Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new RuntimeException("Booking not found"));
 
         booking.setBookingStatus(BookingStatus.CHECKED_IN);
         Room room = booking.getRoom();
@@ -155,8 +116,7 @@ public class BookingService {
 
     @Transactional
     public void checkOut(Integer bookingId) {
-        Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new RuntimeException("Booking not found"));
+        Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new RuntimeException("Booking not found"));
 
         booking.setBookingStatus(BookingStatus.CHECKED_OUT);
         Room room = booking.getRoom();
@@ -166,7 +126,6 @@ public class BookingService {
         roomStatusPublisher.publish(room);
     }
 
-    // ================= HELPERS =================
 
     private void validateDates(BookingRequest request) {
         if (!request.getCheckOutDate().isAfter(request.getCheckInDate())) {
@@ -175,11 +134,7 @@ public class BookingService {
     }
 
     private void checkAvailability(Integer roomNumber, BookingRequest request, Integer currentBookingId) {
-        List<Booking> overlapping = bookingRepository.findByRoom_RoomNumberAndCheckOutDateAfterAndCheckInDateBefore(
-                roomNumber,
-                request.getCheckInDate(),
-                request.getCheckOutDate()
-        );
+        List<Booking> overlapping = bookingRepository.findByRoom_RoomNumberAndCheckOutDateAfterAndCheckInDateBefore(roomNumber, request.getCheckInDate(), request.getCheckOutDate());
 
         if (currentBookingId != null) {
             overlapping.removeIf(b -> b.getReservationID().equals(currentBookingId));
@@ -200,10 +155,7 @@ public class BookingService {
 
         for (LocalDate date = startDate; date.isBefore(endDate); date = date.plusDays(1)) {
             BigDecimal nightlyPrice = basePrice;
-            List<Pricing> activeRules = pricingRepository.findActiveRulesForRoomType(
-                    type.getTypeID(),
-                    date
-            );
+            List<Pricing> activeRules = pricingRepository.findActiveRulesForRoomType(type.getTypeID(), date);
 
             if (!activeRules.isEmpty()) {
                 BigDecimal multiplier = activeRules.get(0).getPricingMultiplier();
@@ -215,20 +167,9 @@ public class BookingService {
     }
 
     private BookingResponse mapToResponse(Booking booking) {
-        String fullName = (booking.getGuest() != null && booking.getGuest().getUser() != null)
-                ? booking.getGuest().getUser().getFullName()
-                : "Unknown Guest";
+        String fullName = (booking.getGuest() != null && booking.getGuest().getUser() != null) ? booking.getGuest().getUser().getFullName() : "Unknown Guest";
 
-        BookingResponse response = new BookingResponse(
-                booking.getReservationID(),
-                booking.getGuest() != null ? booking.getGuest().getUser().getUserID() : null,
-                fullName,
-                booking.getRoom().getRoomNumber(),
-                booking.getCheckInDate(),
-                booking.getCheckOutDate(),
-                booking.getBookingStatus(),
-                booking.getTotalAmount()
-        );
+        BookingResponse response = new BookingResponse(booking.getReservationID(), booking.getGuest() != null ? booking.getGuest().getUser().getUserID() : null, fullName, booking.getRoom().getRoomNumber(), booking.getCheckInDate(), booking.getCheckOutDate(), booking.getBookingStatus(), booking.getTotalAmount());
 
         response.setRoomNumber(String.valueOf(booking.getRoom().getRoomNumber()));
 

@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -24,7 +25,6 @@ public class Pricing {
     @JoinColumn(name = "roomTypeID")
     private RoomType roomType;
 
-    // This field captures the ID from the React frontend request
     @Transient
     @JsonProperty("roomTypeID")
     private Integer roomTypeID;
@@ -37,7 +37,6 @@ public class Pricing {
 
     private String seasonName;
 
-    // Helper method to ensure roomTypeID is populated when sending data to frontend
     @PostLoad
     public void fillRoomTypeID() {
         if (roomType != null) {

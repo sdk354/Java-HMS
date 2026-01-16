@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect} from "react";
 import api from "../api/axios.js";
 import "./ManagerDashboard.css";
 
@@ -28,66 +28,47 @@ const ManagerDashboard = () => {
 		fetchDashboardData();
 	}, []);
 
-	// Helper to safely format currency
 	const formatCurrency = (val) => {
 		if (val === undefined || val === null) return "0.00";
-		return val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+		return val.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
 	};
 
-	const financialCards = [
-		{
-			label: "Total Revenue",
-			value: stats?.totalRevenue,
-			emoji: "📊"
-		},
-		{
-			label: "Room Charges",
-			value: stats?.roomCharges,
-			emoji: "🏨"
-		},
-		{
-			label: "Service Revenue",
-			value: stats?.serviceRevenue,
-			emoji: "🍽️"
-		},
-		{
-			label: "Tax Collected",
-			value: stats?.taxAmount,
-			emoji: "📜"
-		}
-	];
+	const financialCards = [{
+		label: "Total Revenue", value: stats?.totalRevenue, emoji: "📊"
+	}, {
+		label: "Room Charges", value: stats?.roomCharges, emoji: "🏨"
+	}, {
+		label: "Service Revenue", value: stats?.serviceRevenue, emoji: "🍽️"
+	}, {
+		label: "Tax Collected", value: stats?.taxAmount, emoji: "📜"
+	}];
 
 	if (loading) return <div className="manager-container">Loading Financial Data...</div>;
 
-	if (error) return (
-		<div className="manager-container">
-			<div className="glass-card" style={{padding: '40px', textAlign: 'center', border: '1px solid rgba(255,0,0,0.3)'}}>
-				<h2 style={{color: '#ff4d4d'}}>⚠️ {error}</h2>
-				<p style={{opacity: 0.7, marginTop: '10px'}}>Please log in with a Manager or Admin account.</p>
-			</div>
+	if (error) return (<div className="manager-container">
+		<div className="glass-card"
+			 style={{padding: '40px', textAlign: 'center', border: '1px solid rgba(255,0,0,0.3)'}}>
+			<h2 style={{color: '#ff4d4d'}}>⚠️ {error}</h2>
+			<p style={{opacity: 0.7, marginTop: '10px'}}>Please log in with a Manager or Admin account.</p>
 		</div>
-	);
+	</div>);
 
-	return (
-		<div className="manager-container page-fade-in">
-			<header className="manager-header">
-				<h1 className="manager-title">Financial Overview</h1>
-				<p className="manager-welcome">Real-time revenue tracking from hoteldb</p>
-			</header>
+	return (<div className="manager-container page-fade-in">
+		<header className="manager-header">
+			<h1 className="manager-title">Financial Overview</h1>
+			<p className="manager-welcome">Real-time revenue tracking from hoteldb</p>
+		</header>
 
-			<div className="stats-grid">
-				{financialCards.map((card, index) => (
-					<div key={index} className="glass-card stat-card">
-						<div className="stat-emoji">{card.emoji}</div>
-						<h3>{card.label}</h3>
-						<p className="stat-value">
-							LKR {formatCurrency(card.value)}
-						</p>
-					</div>
-				))}
-			</div>
+		<div className="stats-grid">
+			{financialCards.map((card, index) => (<div key={index} className="glass-card stat-card">
+				<div className="stat-emoji">{card.emoji}</div>
+				<h3>{card.label}</h3>
+				<p className="stat-value">
+					LKR {formatCurrency(card.value)}
+				</p>
+			</div>))}
 		</div>
-	);
+	</div>);
 };
 
 export default ManagerDashboard;

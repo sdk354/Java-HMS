@@ -3,7 +3,6 @@
   line-height: 1.5;
   font-weight: 400;
 
-  /* Base Theme Variables - Light Mode */
   --bg-color: #f8fafc;
   --text-color: #1e293b;
   --card-bg: #ffffff;
@@ -19,7 +18,6 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* 1. FIX: Apply theme variables to the scope where data-theme is applied */
 [data-theme="dark"] {
   --bg-color: #0f172a;
   --text-color: #f1f5f9;
@@ -27,7 +25,6 @@
   --button-text: #f1f5f9;
 }
 
-/* 2. FIX: Ensure the background color actually uses the variable on the container */
 body, .app-container {
   margin: 0;
   min-height: 100vh;
@@ -36,33 +33,38 @@ body, .app-container {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Role-Based Accent Variants - These act as the first paint fallback */
-[data-role="guest"] { --accent-color: #f9b17a; }
-[data-role="housekeeping"] { --accent-color: #7a82b8; }
-[data-role="manager"] { --accent-color: #f28c38; } /* Matched to your dashboard highlight */
-[data-role="administration"] { --accent-color: #ef4444; }
+[data-role="guest"] {
+  --accent-color: #f9b17a;
+}
 
-/* Links */
+[data-role="housekeeping"] {
+  --accent-color: #7a82b8;
+}
+
+[data-role="manager"] {
+  --accent-color: #f28c38;
+}
+
+[data-role="administration"] {
+  --accent-color: #ef4444;
+}
+
 a {
   font-weight: 500;
-  /* Use inherit as base so it doesn't flash purple before the role loads */
   color: inherit;
   text-decoration: none;
   transition: color 0.2s ease;
 }
 
-/* Targeted rule for active links to ensure they use the dynamic accent */
 a.active {
   color: var(--accent-color);
 }
 
-/* Headings */
 h1, h2, h3, h4 {
   color: var(--text-color);
   margin-bottom: 0.5em;
 }
 
-/* Buttons */
 button {
   border-radius: 8px;
   border: 1px solid transparent;
@@ -80,7 +82,6 @@ button:hover {
   filter: brightness(1.1);
 }
 
-/* Remove tap highlight for Safari global links */
 a, button {
   -webkit-tap-highlight-color: transparent;
 }

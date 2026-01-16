@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import "./CleaningTasks.css";
 import api from "../api/axios.js";
-import { FaEdit, FaCheckCircle } from "react-icons/fa";
+import {FaEdit, FaCheckCircle} from "react-icons/fa";
 
 const CleaningTasks = () => {
 	const [tasks, setTasks] = useState([]);
@@ -12,13 +12,12 @@ const CleaningTasks = () => {
 	const [isEditing, setIsEditing] = useState(false);
 	const [currentTaskId, setCurrentTaskId] = useState(null);
 
-	// Filter states
 	const [statusFilter, setStatusFilter] = useState("All");
 	const [searchTerm, setSearchTerm] = useState("");
 
 	const initialFormState = {
-		room: { roomNumber: "" },
-		assignedUser: { userID: "" },
+		room: {roomNumber: ""},
+		assignedUser: {userID: ""},
 		status: "Pending",
 		assignedDate: new Date().toISOString().split('T')[0],
 		notes: ""
@@ -45,14 +44,9 @@ const CleaningTasks = () => {
 
 	const fetchDropdownData = async () => {
 		try {
-			const [roomRes, userRes] = await Promise.all([
-				api.get("/rooms"),
-				api.get("/admin/users")
-			]);
+			const [roomRes, userRes] = await Promise.all([api.get("/rooms"), api.get("/admin/users")]);
 			setRooms(roomRes.data);
-			const filteredStaff = userRes.data.filter(user =>
-				user.role?.toLowerCase() === "housekeeping"
-			);
+			const filteredStaff = userRes.data.filter(user => user.role?.toLowerCase() === "housekeeping");
 			setStaffList(filteredStaff);
 		} catch (err) {
 			console.error("Error fetching dropdown data:", err);
@@ -64,10 +58,7 @@ const CleaningTasks = () => {
 		const roomNo = task.room?.roomNumber?.toString() || "";
 		const staffName = task.assignedUser?.fullName?.toLowerCase() || "";
 
-		return matchesStatus && (
-			roomNo.includes(searchTerm) ||
-			staffName.includes(searchTerm.toLowerCase())
-		);
+		return matchesStatus && (roomNo.includes(searchTerm) || staffName.includes(searchTerm.toLowerCase()));
 	});
 
 	const handleOpenCreate = () => {
@@ -80,8 +71,8 @@ const CleaningTasks = () => {
 		setIsEditing(true);
 		setCurrentTaskId(task.taskID);
 		setFormData({
-			room: { roomNumber: task.room?.roomNumber || "" },
-			assignedUser: { userID: task.assignedUser?.userID || "" },
+			room: {roomNumber: task.room?.roomNumber || ""},
+			assignedUser: {userID: task.assignedUser?.userID || ""},
 			status: task.status || "Pending",
 			assignedDate: task.assignedDate || new Date().toISOString().split('T')[0],
 			notes: task.notes || ""
@@ -107,7 +98,7 @@ const CleaningTasks = () => {
 	const handleStatusUpdate = async (id, newStatus) => {
 		try {
 			await api.put(`/cleaning-tasks/${id}/status`, newStatus, {
-				headers: { 'Content-Type': 'text/plain' }
+				headers: {'Content-Type': 'text/plain'}
 			});
 			fetchTasks();
 		} catch (err) {
@@ -117,8 +108,7 @@ const CleaningTasks = () => {
 
 	if (loading) return <div className="manager-container">Synchronizing Housekeeping...</div>;
 
-	return (
-		<div className="manager-container page-fade-in">
+	return (<div className="manager-container page-fade-in">
 			<header className="manager-header">
 				<div className="header-with-actions">
 					<div>
@@ -135,7 +125,7 @@ const CleaningTasks = () => {
 						/>
 						<select
 							className="admin-search-input"
-							style={{ width: '180px' }}
+							style={{width: '180px'}}
 							value={statusFilter}
 							onChange={(e) => setStatusFilter(e.target.value)}
 						>
@@ -152,14 +142,13 @@ const CleaningTasks = () => {
 			</header>
 
 			<div className="tasks-grid">
-				{filteredTasks.length > 0 ? (
-					filteredTasks.map(task => (
+				{filteredTasks.length > 0 ? (filteredTasks.map(task => (
 						<div key={task.taskID} className="glass-card task-card">
 							<div className="task-header">
 								<span className="room-label">Room {task.room?.roomNumber || "N/A"}</span>
 								<div className="header-actions">
 									<button className="icon-btn" onClick={() => handleOpenEdit(task)}>
-										<FaEdit />
+										<FaEdit/>
 									</button>
 									<span className="date-badge">{task.assignedDate}</span>
 								</div>
@@ -172,39 +161,29 @@ const CleaningTasks = () => {
 								</div>
 								<div className="detail-row">
 									<span className="detail-label">Status</span>
-									<span className={`task-status-text ${task.status?.toLowerCase().replace(/\s+/g, '-')}`}>
+									<span
+										className={`task-status-text ${task.status?.toLowerCase().replace(/\s+/g, '-')}`}>
                                         {task.status}
                                     </span>
 								</div>
-								{task.notes && (
-									<div className="detail-row">
+								{task.notes && (<div className="detail-row">
 										<span className="detail-label">Notes</span>
 										<span className="detail-value notes">{task.notes}</span>
-									</div>
-								)}
+									</div>)}
 							</div>
 
 							<div className="task-footer">
-								{task.status !== "Completed" ? (
-									<button className="res-btn checkin" onClick={() => handleStatusUpdate(task.taskID, "Completed")}>
-										<FaCheckCircle /> Mark Completed
-									</button>
-								) : (
-									<span className="completed-stamp">✓ Cleaned</span>
-								)}
+								{task.status !== "Completed" ? (<button className="res-btn checkin"
+																		onClick={() => handleStatusUpdate(task.taskID, "Completed")}>
+										<FaCheckCircle/> Mark Completed
+									</button>) : (<span className="completed-stamp">✓ Cleaned</span>)}
 							</div>
-						</div>
-					))
-				) : (
-					<div className="no-data-msg">No tasks found matching your search.</div>
-				)}
+						</div>))) : (<div className="no-data-msg">No tasks found matching your search.</div>)}
 			</div>
 
-			{/* ASSIGN/EDIT MODAL */}
-			{showModal && (
-				<div className="modal-overlay" onClick={() => setShowModal(false)}>
+			{showModal && (<div className="modal-overlay" onClick={() => setShowModal(false)}>
 					<div className="modal-content glass-card" onClick={(e) => e.stopPropagation()}>
-						<h3 className="manager-title" style={{ fontSize: '1.5rem', marginBottom: '1.5rem' }}>
+						<h3 className="manager-title" style={{fontSize: '1.5rem', marginBottom: '1.5rem'}}>
 							{isEditing ? "Modify Maintenance" : "New Task Assignment"}
 						</h3>
 						<form onSubmit={handleSubmit}>
@@ -213,12 +192,11 @@ const CleaningTasks = () => {
 								<select
 									required
 									value={formData.room.roomNumber}
-									onChange={(e) => setFormData({...formData, room: { roomNumber: e.target.value }})}
+									onChange={(e) => setFormData({...formData, room: {roomNumber: e.target.value}})}
 								>
 									<option value="">Select Room</option>
 									{rooms.map(r => (
-										<option key={r.roomNumber} value={r.roomNumber}>Room {r.roomNumber}</option>
-									))}
+										<option key={r.roomNumber} value={r.roomNumber}>Room {r.roomNumber}</option>))}
 								</select>
 							</div>
 
@@ -227,12 +205,11 @@ const CleaningTasks = () => {
 								<select
 									required
 									value={formData.assignedUser.userID}
-									onChange={(e) => setFormData({...formData, assignedUser: { userID: e.target.value }})}
+									onChange={(e) => setFormData({...formData, assignedUser: {userID: e.target.value}})}
 								>
 									<option value="">Select Housekeeper</option>
 									{staffList.map(s => (
-										<option key={s.userID} value={s.userID}>{s.fullName}</option>
-									))}
+										<option key={s.userID} value={s.userID}>{s.fullName}</option>))}
 								</select>
 							</div>
 
@@ -265,22 +242,28 @@ const CleaningTasks = () => {
 									placeholder="Enter details..."
 									value={formData.notes}
 									onChange={(e) => setFormData({...formData, notes: e.target.value})}
-									style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', color: 'white', padding: '12px', borderRadius: '10px' }}
+									style={{
+										background: 'var(--bg-secondary)',
+										border: '1px solid var(--border-color)',
+										color: 'white',
+										padding: '12px',
+										borderRadius: '10px'
+									}}
 								/>
 							</div>
 
 							<div className="modal-actions">
-								<button type="button" className="cancel-link" onClick={() => setShowModal(false)}>Cancel</button>
+								<button type="button" className="cancel-link"
+										onClick={() => setShowModal(false)}>Cancel
+								</button>
 								<button type="submit" className="admin-action-btn">
 									{isEditing ? "Save Changes" : "Create Task"}
 								</button>
 							</div>
 						</form>
 					</div>
-				</div>
-			)}
-		</div>
-	);
+				</div>)}
+		</div>);
 };
 
 export default CleaningTasks;

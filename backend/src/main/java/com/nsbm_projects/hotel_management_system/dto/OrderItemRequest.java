@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderItemRequest {
-    // Changed from Long to Integer to match MenuItem primary key
     private Integer menuItemId;
     private int quantity;
 }

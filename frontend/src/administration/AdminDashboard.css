@@ -1,5 +1,3 @@
-/* AdminDashboard.css */
-
 .admin-stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -58,7 +56,7 @@
   line-height: 1;
 }
 
-/* Lower Section - Full Width Chart */
+
 .dashboard-lower-section.full-width {
   margin-top: 2rem;
   width: 100%;
@@ -85,7 +83,6 @@
   margin-top: 0.4rem;
 }
 
-/* Added for live chart container */
 .chart-wrapper {
   margin-top: 2.5rem;
   min-height: 350px;

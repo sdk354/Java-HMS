@@ -10,7 +10,6 @@ import java.util.List;
 @Repository
 public interface RoomRepository extends JpaRepository<Room, Integer> {
 
-    // FIX: Changed parameter from String to RoomStatus
     long countByStatus(RoomStatus status);
 
     List<Room> findByStatus(RoomStatus status);

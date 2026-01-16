@@ -2,6 +2,7 @@ package com.nsbm_projects.hotel_management_system.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+
 import java.time.LocalDate;
 
 @Entity
@@ -14,7 +15,7 @@ public class CleaningTask {
     private Integer taskID;
 
     @ManyToOne
-    @JoinColumn(name = "roomID") // Restored to original DB column name
+    @JoinColumn(name = "roomID")
     private Room room;
 
     @ManyToOne
@@ -23,8 +24,7 @@ public class CleaningTask {
 
     private LocalDate assignedDate;
 
-    private String status; // Pending, In Progress, Completed
-
+    private String status;
     @Column(columnDefinition = "TEXT")
     private String notes;
 }

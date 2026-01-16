@@ -2,12 +2,15 @@ package com.nsbm_projects.hotel_management_system.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.math.BigDecimal;
 
 @Entity
 @Table(name = "ServiceItem")
-@Getter @Setter
-@NoArgsConstructor @AllArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class ServiceItem {
 

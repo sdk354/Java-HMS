@@ -12,13 +12,11 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BookingRequest {
-    // Matches Database INT types
     private Integer guestId;
     private Integer roomId;
     private LocalDate checkInDate;
     private LocalDate checkOutDate;
 
-    // ADDED: Fields required for the Admin Edit Modal
     private BookingStatus bookingStatus;
     private BigDecimal totalAmount;
 }
